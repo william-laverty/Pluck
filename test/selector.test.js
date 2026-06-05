@@ -49,12 +49,35 @@ test('drops machine-generated junk classes from the headline', function () {
 });
 
 test('isJunkClass classifies common framework hashes', function () {
-  ['css-1a2b3c', 'sc-bdVaJa', 'jsx-1029384756', 'a1b2c3d4ef', '8675309'].forEach(function (c) {
+  ['css-1a2b3c', 'sc-bdVaJa', 'jsx-1029384756', 'a1b2c3d4ef', '8675309', 'e1abc2de3'].forEach(function (c) {
     assert.ok(sel.isJunkClass(c), c + ' should be junk');
   });
-  ['btn', 'btn-primary', 'nav-link', 'hero', 'card', 'is-active', 'col-6'].forEach(function (c) {
+  // real, human class names must survive — including long "e…" words (emotion FP)
+  ['btn', 'btn-primary', 'nav-link', 'hero', 'card', 'is-active', 'col-6',
+   'editorContent', 'expandable', 'engagement'].forEach(function (c) {
     assert.ok(!sel.isJunkClass(c), c + ' should be kept');
   });
+});
+
+test('cssEscapeIdent fallback matches CSSOM for tricky idents', function () {
+  // exercises the node polyfill path (CSS.escape absent in node)
+  assert.strictEqual(sel.cssEscapeIdent('-9'), '-\\39 ');
+  assert.strictEqual(sel.cssEscapeIdent('123abc'), '\\31 23abc');
+  assert.strictEqual(sel.cssEscapeIdent('-'), '\\-');
+  assert.strictEqual(sel.cssEscapeIdent('foo:bar'), 'foo\\:bar');
+});
+
+test('preserves camelCase SVG tag names (case-sensitive type selectors)', function () {
+  var doc = docFrom('');
+  var svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  var defs = doc.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  var grad = doc.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+  doc.body.appendChild(svg);
+  var r = sel.buildSelector(grad, doc);
+  assert.ok(/linearGradient/.test(r.headline), 'must keep camelCase, got ' + r.headline);
+  assert.ok(!/lineargradient/.test(r.headline), 'must not lowercase SVG tag');
 });
 
 test('climbs ancestors to disambiguate identical subtrees', function () {

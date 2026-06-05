@@ -58,9 +58,19 @@ function wire() {
 
   els.segBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var mode = btn.getAttribute('data-mode');
-      setActiveMode(mode);
-      chrome.storage.local.set({ mode: mode });
+      selectMode(btn.getAttribute('data-mode'), false);
+    });
+    // WAI-ARIA radiogroup keyboard pattern: arrows move selection + focus.
+    btn.addEventListener('keydown', function (e) {
+      var i = els.segBtns.indexOf(btn);
+      var next = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % els.segBtns.length;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + els.segBtns.length) % els.segBtns.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = els.segBtns.length - 1;
+      if (next === -1) return;
+      e.preventDefault();
+      selectMode(els.segBtns[next].getAttribute('data-mode'), true);
     });
   });
 
@@ -73,10 +83,18 @@ function wire() {
   });
 }
 
-function setActiveMode(mode) {
+function selectMode(mode, focus) {
+  setActiveMode(mode, focus);
+  chrome.storage.local.set({ mode: mode });
+}
+
+function setActiveMode(mode, focus) {
   els.segBtns.forEach(function (btn) {
     var on = btn.getAttribute('data-mode') === mode;
     btn.setAttribute('aria-checked', on ? 'true' : 'false');
+    // Roving tabindex: only the checked radio is in the tab order.
+    btn.tabIndex = on ? 0 : -1;
+    if (on && focus) btn.focus();
   });
   els.modeHint.textContent = MODE_HINTS[mode] || '';
 }
@@ -100,7 +118,8 @@ function renderHistory(history) {
 
     var meta = document.createElement('span');
     meta.className = 'h-meta';
-    meta.textContent = hostOf(item.url) + ' · ' + timeAgo(item.ts);
+    var warn = item.isUnique === false ? '⚠ may match multiple · ' : '';
+    meta.textContent = warn + hostOf(item.url) + ' · ' + timeAgo(item.ts);
 
     btn.appendChild(sel);
     btn.appendChild(meta);
@@ -112,10 +131,34 @@ function renderHistory(history) {
 
 function recopy(item) {
   var text = item.full || item.selector || item.headline || '';
-  navigator.clipboard.writeText(text).then(showCopied, showCopied);
+  if (!text) { flash('Nothing to copy', true); return; }
+  navigator.clipboard.writeText(text).then(
+    function () { flash('Copied', false); },
+    function () {
+      var ok = legacyCopyText(text);
+      flash(ok ? 'Copied' : 'Copy failed', !ok);
+    }
+  );
 }
 
-function showCopied() {
+function legacyCopyText(text) {
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function flash(message, isError) {
+  els.copied.textContent = message;
+  els.copied.classList.toggle('is-error', !!isError);
   els.copied.hidden = false;
   void els.copied.offsetWidth;
   els.copied.classList.add('is-on');

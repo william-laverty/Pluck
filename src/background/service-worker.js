@@ -28,9 +28,12 @@ async function toggleInspect(tab) {
     return flashBadge('×', '#ef4444');
   }
   try {
-    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: CONTENT_FILES });
+    // allFrames so elements inside (cross-origin) iframes are reachable; each
+    // frame runs its own self-contained controller (only the top frame shows
+    // the hint chip).
+    await chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: CONTENT_FILES });
     await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
+      target: { tabId: tab.id, allFrames: true },
       func: function () {
         if (window.__pluck && window.__pluck.controller) window.__pluck.controller.toggle();
       },

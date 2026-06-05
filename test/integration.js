@@ -103,6 +103,15 @@ async function main() {
   }, r3.facts.selector);
   check('hero button selector resolves to exactly 1 live node', resolves === 1, 'matched ' + resolves);
 
+  // SVG: camelCase tag must be preserved and the selector must resolve in Chrome
+  var r4 = await pluck('#grad-a');
+  check('preserves camelCase SVG tag', r4 && /linearGradient/.test(r4.facts.selector) && !/lineargradient/.test(r4.facts.selector), r4 && r4.facts.selector);
+  var svgResolves = await page.evaluate(function (sel) {
+    try { return document.querySelectorAll(sel).length; } catch (e) { return -1; }
+  }, r4.facts.selector);
+  check('SVG selector resolves to exactly 1 live node (case-sensitive)', svgResolves === 1, 'matched ' + svgResolves);
+  check('SVG selector reported unique', r4 && r4.facts.isUnique === true);
+
   // ---- 3. trusted click: real clipboard + click suppression ---------------
   console.log('\nTrusted click (clipboard + suppression):');
   await page.evaluate(function () {

@@ -12,38 +12,44 @@
   var MAX_CLASSES = 4; // classes kept per segment, for readability
 
   // Identifier escaping for ids/class names used in selectors. Prefer the
-  // platform CSS.escape; fall back to a spec-aligned escaper when absent (node).
+  // platform CSS.escape; otherwise use the canonical per-code-point polyfill
+  // (matches the CSSOM spec; handles leading digit, "-"+digit, lone "-", etc).
   function cssEscapeIdent(value) {
     if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
       return CSS.escape(value);
     }
-    var str = String(value);
-    var out = '';
-    for (var i = 0; i < str.length; i++) {
-      var c = str.charCodeAt(i);
-      var ch = str[i];
+    var string = String(value);
+    var length = string.length;
+    var index = -1;
+    var result = '';
+    var firstCodeUnit = string.charCodeAt(0);
+    while (++index < length) {
+      var codeUnit = string.charCodeAt(index);
+      if (codeUnit === 0x0000) { result += '�'; continue; }
       if (
-        c === 0x2d && str.length === 1 // a lone "-"
+        (codeUnit >= 0x0001 && codeUnit <= 0x001f) || codeUnit === 0x007f ||
+        (index === 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
+        (index === 1 && codeUnit >= 0x0030 && codeUnit <= 0x0039 && firstCodeUnit === 0x002d)
       ) {
-        out += '\\' + ch;
-      } else if (
-        (c >= 0x30 && c <= 0x39) || // 0-9
-        (c >= 0x41 && c <= 0x5a) || // A-Z
-        (c >= 0x61 && c <= 0x7a) || // a-z
-        c === 0x5f || // _
-        c === 0x2d || // -
-        c > 0x7f // non-ascii
-      ) {
-        out += ch;
-      } else {
-        out += '\\' + ch;
+        result += '\\' + codeUnit.toString(16) + ' ';
+        continue;
       }
+      if (index === 0 && length === 1 && codeUnit === 0x002d) {
+        result += '\\' + string.charAt(index);
+        continue;
+      }
+      if (
+        codeUnit >= 0x0080 || codeUnit === 0x002d || codeUnit === 0x005f ||
+        (codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
+        (codeUnit >= 0x0041 && codeUnit <= 0x005a) ||
+        (codeUnit >= 0x0061 && codeUnit <= 0x007a)
+      ) {
+        result += string.charAt(index);
+        continue;
+      }
+      result += '\\' + string.charAt(index);
     }
-    // A leading digit (or "-" + digit) must be escaped as a hex code point.
-    if (/^-?\d/.test(str)) {
-      out = '\\3' + str[0] + ' ' + out.slice(str[0] === '-' ? 2 : 1);
-    }
-    return out;
+    return result;
   }
 
   // Heuristic: does this class name look machine-generated (and therefore
@@ -54,8 +60,8 @@
     if (/^css-[a-z0-9]{4,}$/i.test(cls)) return true;
     // styled-components runtime classes: sc-bdVaJa, sc-1x2y3z
     if (/^sc-[a-zA-Z0-9]{5,}$/.test(cls)) return true;
-    // emotion: css / e1abc2de3
-    if (/^e[a-z0-9]{8,}$/i.test(cls)) return true;
+    // emotion: e1abc2de3 (require a digit so real words like "editorContent" survive)
+    if (/^e[a-z0-9]{8,}$/i.test(cls) && /\d/.test(cls)) return true;
     // next/jsx scoped: jsx-1234567890
     if (/^jsx-\d+$/.test(cls)) return true;
     // generic hashy token: has letters AND a long hex-ish digit run, e.g. "x1a2b3c4"
@@ -84,7 +90,11 @@
   }
 
   function tagOf(el) {
-    return (el.tagName || '').toLowerCase();
+    var tag = el.tagName || '';
+    // HTML type selectors are case-insensitive, but SVG/MathML are case-sensitive
+    // in an HTML document — lowercasing "linearGradient" would match nothing.
+    if (el.namespaceURI && el.namespaceURI !== 'http://www.w3.org/1999/xhtml') return tag;
+    return tag.toLowerCase();
   }
 
   function isUsableId(el) {

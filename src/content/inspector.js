@@ -33,6 +33,8 @@
     var mode = 'context';
     var scrollRaf = 0;
     var gen = 0; // bumped each activation so stale timers can't kill a new overlay
+    var finalizing = false; // true between a capture click and its async teardown
+    var isTop = window.top === window.self;
 
     // ----- lifecycle -------------------------------------------------------
 
@@ -48,6 +50,7 @@
       if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
       if (host) teardownOverlay(); // clear any leftover overlay from a prior run
       active = true;
+      finalizing = false;
       mode = 'context';
       loadMode();
       buildOverlay();
@@ -103,7 +106,7 @@
         '<div class="pluck-box"></div>' +
         '<div class="pluck-label"></div>' +
         '<div class="pluck-hint"><kbd>↑</kbd><kbd>↓</kbd> refine · click to copy · <kbd>esc</kbd> cancel</div>' +
-        '<div class="pluck-toast"><span class="pluck-check">' +
+        '<div class="pluck-toast" role="status" aria-live="polite"><span class="pluck-check">' +
         '<svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.2 2.3 4.8-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
         '</span><span class="pluck-sel"></span></div>';
       shadow.appendChild(layer);
@@ -121,12 +124,18 @@
         clearTimeout(toastTimer);
         toastTimer = null;
       }
+      if (scrollRaf) {
+        cancelAnimationFrame(scrollRaf);
+        scrollRaf = 0;
+      }
       if (host && host.parentNode) host.parentNode.removeChild(host);
       host = shadow = box = label = hint = toast = null;
     }
 
     function showHint(on) {
-      if (hint) hint.classList.toggle('is-on', !!on);
+      // Only the top frame shows the persistent hint, so a page full of iframes
+      // doesn't stack one chip per frame.
+      if (hint) hint.classList.toggle('is-on', !!on && isTop);
     }
 
     // ----- painting --------------------------------------------------------
@@ -279,7 +288,8 @@
     }
 
     function finalize(el) {
-      if (!el || el.nodeType !== 1) return;
+      if (!el || el.nodeType !== 1 || finalizing) return;
+      finalizing = true; // stop further clicks re-entering during the async write
       var facts = buildFacts(el);
       var out = ns.format ? ns.format.formatElement(facts, mode) : facts.selector;
 
@@ -291,7 +301,8 @@
 
       Promise.resolve(ok).then(function (success) {
         recordHistory(facts, out);
-        showToast(success, facts.headline);
+        var state = !success ? 'error' : (facts.isUnique ? 'ok' : 'warn');
+        showToast(state, facts.headline);
         // Keep the toast; remove the rest of the overlay interaction.
         deactivate(true);
         scheduleToastHide();
@@ -311,16 +322,18 @@
     }
 
     function legacyCopy(text) {
+      var mount = document.body || document.documentElement;
+      if (!mount) return false;
       try {
         var ta = document.createElement('textarea');
         ta.value = text;
         ta.setAttribute('readonly', '');
         ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;';
-        document.body.appendChild(ta);
+        mount.appendChild(ta);
         ta.select();
         ta.setSelectionRange(0, text.length);
         var ok = document.execCommand('copy');
-        document.body.removeChild(ta);
+        mount.removeChild(ta);
         return ok;
       } catch (e) {
         return false;
@@ -336,16 +349,23 @@
             selector: facts.selector,
             full: full,
             url: location.href,
+            isUnique: facts.isUnique,
           },
         });
       } catch (e) { /* no receiver — fine */ }
     }
 
-    function showToast(success, headline) {
+    // state: 'ok' | 'warn' | 'error'
+    function showToast(state, headline) {
       if (!toast) return;
-      toast.classList.toggle('is-error', !success);
+      toast.classList.toggle('is-error', state === 'error');
+      toast.classList.toggle('is-warn', state === 'warn');
       var selSpan = toast.querySelector('.pluck-sel');
-      if (selSpan) selSpan.textContent = success ? headline : 'Copy blocked — try again';
+      if (selSpan) {
+        if (state === 'error') selSpan.textContent = 'Copy blocked — try again';
+        else if (state === 'warn') selSpan.textContent = headline + ' — may match multiple';
+        else selSpan.textContent = headline;
+      }
       // force reflow so the transition runs even right after creation
       void toast.offsetWidth;
       toast.classList.add('is-on');
@@ -363,8 +383,16 @@
 
     // ----- event handlers --------------------------------------------------
 
+    // The deepest element under the pointer, piercing open shadow roots (where
+    // e.target is retargeted to the shadow host).
+    function pickTarget(e) {
+      var path = e.composedPath && e.composedPath();
+      var t = path && path.length ? path[0] : e.target;
+      return t;
+    }
+
     function onMouseMove(e) {
-      var t = e.target;
+      var t = pickTarget(e);
       if (!t || t === host || t.nodeType !== 1) return;
       if (t === current) return;
       paint(t);
@@ -375,8 +403,7 @@
       var k = e.key;
       if (k === 'Escape') {
         swallow(e);
-        deactivate(false);
-        teardownOverlay();
+        deactivate(false); // already tears the overlay down when keepToast is false
       } else if (k === 'ArrowUp') {
         swallow(e);
         if (current && current.parentElement && current.parentElement.nodeType === 1) {
@@ -389,18 +416,16 @@
         }
       } else if (k === 'Enter') {
         swallow(e);
-        if (current) finalize(current);
+        if (current && !finalizing) finalize(current);
       }
     }
 
     function onClick(e) {
       if (!active) return;
-      if (typeof e.button === 'number' && e.button !== 0) {
-        swallow(e);
-        return;
-      }
       swallow(e);
-      var target = current || e.target;
+      if (finalizing) return;
+      if (typeof e.button === 'number' && e.button !== 0) return;
+      var target = current || pickTarget(e);
       finalize(target);
     }
 
@@ -411,9 +436,10 @@
     function onScroll() {
       if (!active || !current) return;
       if (scrollRaf) return;
+      var g = gen;
       scrollRaf = requestAnimationFrame(function () {
         scrollRaf = 0;
-        if (active && current && current.isConnected !== false) paint(current);
+        if (g === gen && active && current && current.isConnected !== false) paint(current);
       });
     }
 
