@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Pluck</title>
+  </head>
+  <body>
+    <header class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+          <path d="M5 5h4M5 5v4M19 5h-4M19 5v4M5 19h4M5 19v-4M19 19h-4M19 19v-4"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <circle cx="12" cy="12" r="2" fill="currentColor" />
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>Pluck</h1>
+        <p>Click an element → copy it for Claude Code</p>
+      </div>
+    </header>
+
+    <button id="start" class="start">
+      <span>Start inspecting</span>
+      <kbd id="hotkey">⌘⇧E</kbd>
+    </button>
+
+    <section class="modes">
+      <span class="modes-label">Copy format</span>
+      <div class="seg" role="radiogroup" aria-label="Copy format">
+        <button class="seg-btn" data-mode="selector" role="radio">Selector</button>
+        <button class="seg-btn" data-mode="context" role="radio">+ Context</button>
+        <button class="seg-btn" data-mode="full" role="radio">Full</button>
+      </div>
+      <p class="modes-hint" id="mode-hint"></p>
+    </section>
+
+    <section class="history">
+      <div class="history-head">
+        <span>Recent</span>
+        <button id="clear" class="link" hidden>Clear</button>
+      </div>
+      <ul id="history-list" class="history-list"></ul>
+      <p id="history-empty" class="empty">Nothing plucked yet. Hit the shortcut on any page.</p>
+    </section>
+
+    <footer class="foot">
+      <button id="shortcut" class="link">Change shortcut</button>
+      <span class="dot">·</span>
+      <span class="muted">Esc to cancel · ↑↓ to refine</span>
+    </footer>
+
+    <div id="copied" class="copied" hidden>Copied</div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

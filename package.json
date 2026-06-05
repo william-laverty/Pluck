@@ -1,0 +1,16 @@
+{
+  "name": "pluck",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hit a hotkey, click any element, and a Claude-Code-ready selector lands on your clipboard.",
+  "type": "commonjs",
+  "scripts": {
+    "icons": "node scripts/make-icons.js",
+    "check": "node scripts/check.js",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3",
+    "playwright": "^1.58.0"
+  }
+}
