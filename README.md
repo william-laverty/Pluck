@@ -13,7 +13,9 @@ Pluck is a tiny Chromium extension for the AI-assisted design loop. Instead of o
 3. Click **Load unpacked** and select this folder (the one containing `manifest.json`).
 4. (Optional) Pin Pluck to the toolbar.
 
-The default shortcut is **⌘⇧E** (macOS) / **Ctrl+Shift+E** (Windows/Linux). Change it at `chrome://extensions/shortcuts`.
+The default shortcut is **⌘⇧E** (macOS) / **Ctrl+Shift+E** (Windows/Linux). **Change it in Pluck's popup** (click the toolbar icon → the shortcut chip → press your keys). Pluck handles the shortcut in-page rather than through `chrome://extensions/shortcuts`, so it fires on the first press on any site — including browsers like **Arc** where extension command shortcuts are unreliable.
+
+> After installing or reloading the extension, **already-open tabs need a refresh** to pick up the in-page shortcut (newly opened tabs work immediately). The toolbar **Start inspecting** button works on open tabs without a refresh.
 
 ## Use
 
@@ -45,16 +47,19 @@ The popup also keeps your **last 10 plucks** — click any to copy it again.
 
 ## How it works
 
+Pluck's content scripts are **declared** (injected on every page via `content_scripts`), so the inspector and its shortcut listener are always present — no on-demand injection, no service-worker wake, no `activeTab` timing. That's what makes the shortcut reliable.
+
 | Piece | Role |
 |---|---|
-| `src/background/service-worker.js` | Listens for the hotkey / popup request, injects the content scripts into the active tab via `chrome.scripting`, stores capture history. |
-| `src/content/selector.js` | Pure selector engine. Builds a `querySelectorAll`-verified unique selector; climbs ancestors and adds `:nth-of-type` only as needed; drops machine-generated junk classes (`css-1a2b3c`, `sc-…`, `jsx-…`). |
-| `src/content/format.js` | Pure formatter: element facts → clipboard string, per mode. |
+| `src/content/shortcut.js` | In-page `keydown` listener. Detects the configured combo and toggles inspect mode directly — the reason the shortcut works on the first press, even where `chrome.commands` doesn't. |
 | `src/content/inspector.js` | The inspect-mode controller: a Shadow-DOM overlay, capture-phase event handling (so the page never reacts to the selection click), clipboard write, toast. |
+| `src/content/selector.js` | Pure selector engine. Builds a `querySelectorAll`-verified unique selector; climbs ancestors and adds `:nth-of-type` only as needed; drops machine-generated junk classes (`css-1a2b3c`, `sc-…`, `jsx-…`); keeps SVG tag case. |
+| `src/content/format.js` | Pure formatter: element facts → clipboard string, per mode. |
 | `src/content/styles.js` | Overlay styles (adopted into the shadow root). |
-| `src/popup/*` | Format toggle, hotkey reminder, copy history. |
+| `src/background/service-worker.js` | Handles the toolbar **Start inspecting** request (messages the content script, or injects as a fallback on tabs opened before install) and stores capture history. |
+| `src/popup/*` | Format toggle, shortcut recorder, copy history. |
 
-**Permissions:** `scripting`, `storage`, and `host_permissions: <all_urls>`. The broad host access is deliberate: it's what lets the keyboard shortcut inject on the **first** press on any site. (The leaner `activeTab` only grants page access *after* you click the icon / open the popup, so a cold shortcut press silently did nothing — see the note below.) No network is used; nothing leaves your machine — Pluck only reads the DOM when you invoke it.
+**Permissions:** `scripting`, `storage`, and `host_permissions: <all_urls>`. The broad host access is what lets the declared content script (and its shortcut listener) run on every site so the shortcut fires on the first press — `scripting` is only used as a fallback to inject into tabs that were open before the extension loaded. No network is used; nothing leaves your machine — Pluck only reads the DOM when you invoke it.
 
 ## Develop
 

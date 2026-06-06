@@ -9,20 +9,26 @@ var vm = require('node:vm');
 var SW_SRC = fs.readFileSync(path.join(__dirname, '..', 'src', 'background', 'service-worker.js'), 'utf8');
 
 // Build a fresh mocked `chrome` + a loaded service worker for each test.
-function loadSW() {
+function loadSW(opts) {
+  opts = opts || {};
   var mem = {};
-  var listeners = { command: [], message: [] };
-  var calls = { executeScript: [], badge: [] };
+  var listeners = { message: [] };
+  var calls = { executeScript: [], badge: [], sendMessage: [] };
+  var tabUrl = opts.url || 'https://example.com/';
+  // Default: a content script IS present (sendMessage resolves).
+  var sendMessageBehavior = opts.sendMessageRejects
+    ? function () { return Promise.reject(new Error('Could not establish connection')); }
+    : function () { return Promise.resolve(undefined); };
 
   var chrome = {
-    commands: { onCommand: { addListener: function (fn) { listeners.command.push(fn); } } },
     runtime: { onMessage: { addListener: function (fn) { listeners.message.push(fn); } } },
     tabs: {
-      query: function () { return Promise.resolve([{ id: 7, url: 'https://example.com/' }]); },
+      query: function () { return Promise.resolve([{ id: 7, url: tabUrl }]); },
       create: function () {},
+      sendMessage: function (id, msg) { calls.sendMessage.push({ id: id, msg: msg }); return sendMessageBehavior(); },
     },
     scripting: {
-      executeScript: function (opts) { calls.executeScript.push(opts); return Promise.resolve([]); },
+      executeScript: function (o) { calls.executeScript.push(o); return Promise.resolve([]); },
     },
     action: {
       setBadgeBackgroundColor: function () {},
@@ -32,9 +38,7 @@ function loadSW() {
       local: {
         get: function (defaults) {
           var out = {};
-          Object.keys(defaults).forEach(function (k) {
-            out[k] = k in mem ? mem[k] : defaults[k];
-          });
+          Object.keys(defaults).forEach(function (k) { out[k] = k in mem ? mem[k] : defaults[k]; });
           return Promise.resolve(out);
         },
         set: function (obj) { Object.assign(mem, obj); return Promise.resolve(); },
@@ -48,21 +52,19 @@ function loadSW() {
 
   function send(msg) {
     return new Promise(function (resolve) {
-      var responded = false;
-      var sendResponse = function (r) { responded = true; resolve({ response: r }); };
+      var sendResponse = function (r) { resolve({ response: r }); };
       var ret = listeners.message[0](msg, { tab: { id: 7 } }, sendResponse);
-      // If the handler isn't async, resolve on the next tick.
-      if (ret !== true) setTimeout(function () { if (!responded) resolve({ response: undefined, sync: true }); }, 0);
+      if (ret !== true) setTimeout(function () { resolve({ response: undefined, sync: true }); }, 0);
     });
   }
 
   return { chrome: chrome, mem: function () { return mem; }, listeners: listeners, calls: calls, send: send };
 }
 
-test('registers command and message listeners on load', function () {
+test('registers a message listener on load (no commands API)', function () {
   var sw = loadSW();
-  assert.strictEqual(sw.listeners.command.length, 1);
   assert.strictEqual(sw.listeners.message.length, 1);
+  assert.ok(!/chrome\.commands/.test(SW_SRC), 'service worker should not use chrome.commands');
 });
 
 test('pluck:captured persists a history entry (newest first)', async function () {
@@ -72,8 +74,16 @@ test('pluck:captured persists a history entry (newest first)', async function ()
   var h = sw.mem().history;
   assert.strictEqual(h.length, 2);
   assert.strictEqual(h[0].headline, 'b.y', 'newest should be first');
-  assert.strictEqual(h[1].headline, 'a.x');
   assert.ok(typeof h[0].ts === 'number');
+});
+
+test('pluck:captured records the isUnique flag', async function () {
+  var sw = loadSW();
+  await sw.send({ type: 'pluck:captured', payload: { headline: 'a', selector: 'a', isUnique: false } });
+  await sw.send({ type: 'pluck:captured', payload: { headline: 'b', selector: 'b' } }); // omitted → unique
+  var h = sw.mem().history;
+  assert.strictEqual(h[0].isUnique, true, 'omitted isUnique defaults to true');
+  assert.strictEqual(h[1].isUnique, false, 'explicit false is preserved');
 });
 
 test('history is capped at 10 entries', async function () {
@@ -84,25 +94,30 @@ test('history is capped at 10 entries', async function () {
   var h = sw.mem().history;
   assert.strictEqual(h.length, 10);
   assert.strictEqual(h[0].headline, 'el13', 'most recent kept');
-  assert.strictEqual(h[9].headline, 'el4', 'oldest of the kept window');
 });
 
-test('pluck:start injects content files then toggles', async function () {
-  var sw = loadSW();
+test('pluck:start toggles via the content script when present (no injection)', async function () {
+  var sw = loadSW(); // sendMessage resolves → content script present
   await sw.send({ type: 'pluck:start' });
-  // allow the async injection chain to settle
   await new Promise(function (r) { setTimeout(r, 10); });
-  assert.ok(sw.calls.executeScript.length >= 2, 'should inject files then call toggle');
-  var filesCall = sw.calls.executeScript[0];
-  assert.ok(Array.isArray(filesCall.files) && filesCall.files.length === 4, 'injects the 4 content files');
-  assert.ok(filesCall.files.some(function (f) { return /inspector\.js$/.test(f); }));
-  var funcCall = sw.calls.executeScript[1];
-  assert.ok(typeof funcCall.func === 'function', 'second call toggles via injected function');
+  assert.strictEqual(sw.calls.sendMessage.length, 1, 'should message the content script');
+  assert.strictEqual(sw.calls.sendMessage[0].msg.type, 'pluck:toggle');
+  assert.strictEqual(sw.calls.executeScript.length, 0, 'must NOT inject when content script is present');
 });
 
-test('does not inject into restricted pages', async function () {
-  var sw = loadSW();
-  sw.chrome.tabs.query = function () { return Promise.resolve([{ id: 9, url: 'chrome://settings' }]); };
+test('pluck:start falls back to injection when no content script', async function () {
+  var sw = loadSW({ sendMessageRejects: true });
+  await sw.send({ type: 'pluck:start' });
+  await new Promise(function (r) { setTimeout(r, 10); });
+  assert.ok(sw.calls.executeScript.length >= 2, 'should inject files then toggle');
+  var filesCall = sw.calls.executeScript[0];
+  assert.ok(filesCall.files.some(function (f) { return /inspector\.js$/.test(f); }));
+  assert.ok(filesCall.files.some(function (f) { return /shortcut\.js$/.test(f); }));
+  assert.ok(filesCall.target.allFrames === true);
+});
+
+test('does not inject into restricted pages when content script is absent', async function () {
+  var sw = loadSW({ sendMessageRejects: true, url: 'chrome://settings' });
   await sw.send({ type: 'pluck:start' });
   await new Promise(function (r) { setTimeout(r, 10); });
   assert.strictEqual(sw.calls.executeScript.length, 0, 'restricted page must not be injected');

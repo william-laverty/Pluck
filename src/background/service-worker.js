@@ -1,9 +1,13 @@
 /**
  * Pluck background service worker (MV3).
  *
- * Triggers inspect mode on the keyboard command or a request from the popup by
- * injecting the content scripts into the active tab and toggling the controller.
- * Also stores capture history in chrome.storage.local.
+ * The shortcut itself is handled in-page by src/content/shortcut.js (no command
+ * API — see that file for why). This worker only handles the toolbar "Start
+ * inspecting" request and stores capture history.
+ *
+ * For the toolbar path it first messages the already-present content script;
+ * if the tab has no content script yet (opened before the extension loaded), it
+ * injects on demand as a fallback.
  */
 
 var CONTENT_FILES = [
@@ -11,26 +15,40 @@ var CONTENT_FILES = [
   'src/content/selector.js',
   'src/content/format.js',
   'src/content/inspector.js',
+  'src/content/shortcut.js',
 ];
 
 var HISTORY_LIMIT = 10;
-var RESTRICTED = /^(chrome|edge|brave|arc|about|devtools|view-source|chrome-extension|moz-extension):/i;
+var RESTRICTED = /^(chrome|edge|brave|arc|about|devtools|view-source|chrome-extension|moz-extension|data):/i;
 
 async function activeTab() {
   var tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   return tabs && tabs[0];
 }
 
+function isRestricted(url) {
+  if (!url) return false;
+  return RESTRICTED.test(url) ||
+    url.includes('chromewebstore.google.com') ||
+    url.includes('chrome.google.com/webstore');
+}
+
 async function toggleInspect(tab) {
   tab = tab || (await activeTab());
   if (!tab || !tab.id) return;
-  if (tab.url && (RESTRICTED.test(tab.url) || tab.url.includes('chrome.google.com/webstore') || tab.url.includes('chromewebstore.google.com'))) {
-    return flashBadge('×', '#ef4444');
-  }
+
+  // Preferred path: the declared content script is already on the page.
   try {
-    // allFrames so elements inside (cross-origin) iframes are reachable; each
-    // frame runs its own self-contained controller (only the top frame shows
-    // the hint chip).
+    await chrome.tabs.sendMessage(tab.id, { type: 'pluck:toggle' });
+    return;
+  } catch (e) {
+    // No receiver — tab predates the install, or is a restricted page.
+  }
+
+  if (isRestricted(tab.url)) return flashBadge('×', '#ef4444');
+
+  // Fallback: inject on demand into a tab that doesn't have the content script.
+  try {
     await chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: CONTENT_FILES });
     await chrome.scripting.executeScript({
       target: { tabId: tab.id, allFrames: true },
@@ -50,10 +68,6 @@ function flashBadge(text, color) {
     setTimeout(function () { chrome.action.setBadgeText({ text: '' }); }, 1200);
   } catch (e) { /* ignore */ }
 }
-
-chrome.commands.onCommand.addListener(function (command) {
-  if (command === 'toggle-inspect') toggleInspect();
-});
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (!msg || !msg.type) return;
@@ -79,6 +93,7 @@ async function saveHistory(entry) {
       selector: entry.selector || '',
       full: entry.full || '',
       url: entry.url || '',
+      isUnique: entry.isUnique !== false,
       ts: Date.now(),
     });
     if (history.length > HISTORY_LIMIT) history = history.slice(0, HISTORY_LIMIT);

@@ -59,8 +59,28 @@ async function main() {
 
   await page.goto(FIXTURE, { waitUntil: 'load' });
   await page.waitForFunction(function () {
-    return window.__pluck && window.__pluck.controller && window.__pluck.selector && window.__pluck.format;
+    return window.__pluck && window.__pluck.controller && window.__pluck.selector &&
+           window.__pluck.format && window.__pluck.shortcutBound;
   }, null, { timeout: 5000 });
+
+  // ---- 0. in-page keyboard shortcut (the Arc-proof path) ------------------
+  console.log('\nIn-page shortcut:');
+  var toggleByKey = await page.evaluate(function () {
+    var c = window.__pluck.controller;
+    if (c.isActive()) c.deactivate(false);
+    function fire() {
+      window.dispatchEvent(new KeyboardEvent('keydown', {
+        code: 'KeyE', key: 'E', metaKey: true, shiftKey: true, bubbles: true, cancelable: true,
+      }));
+    }
+    fire();
+    var on = c.isActive() && !!document.querySelector('pluck-host');
+    fire();
+    var off = !c.isActive();
+    return { on: on, off: off };
+  });
+  check('⌘⇧E keydown activates inspect mode (no service worker / command)', toggleByKey.on);
+  check('⌘⇧E keydown again toggles it off', toggleByKey.off);
 
   // ---- 2. overlay builds on activate --------------------------------------
   console.log('\nOverlay + interaction:');

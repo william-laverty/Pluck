@@ -6,47 +6,46 @@ var MODE_HINTS = {
   full: 'Adds key computed styles (color, font, padding…).',
 };
 
+var MODIFIER_KEYS = ['Meta', 'Control', 'Alt', 'Shift', 'OS', 'ContextMenu'];
+
 var els = {};
+var currentCombo = null;
+var recording = false;
 
 document.addEventListener('DOMContentLoaded', function () {
   els.start = document.getElementById('start');
   els.hotkey = document.getElementById('hotkey');
+  els.shortcutBtn = document.getElementById('shortcut-btn');
+  els.resetShortcut = document.getElementById('reset-shortcut');
   els.segBtns = Array.prototype.slice.call(document.querySelectorAll('.seg-btn'));
   els.modeHint = document.getElementById('mode-hint');
   els.list = document.getElementById('history-list');
   els.empty = document.getElementById('history-empty');
   els.clear = document.getElementById('clear');
-  els.shortcut = document.getElementById('shortcut');
   els.copied = document.getElementById('copied');
 
   init();
   wire();
 });
 
-function init() {
-  showPlatformHotkey();
-  chrome.storage.local.get({ mode: 'context', history: [] }, function (res) {
-    setActiveMode(res.mode || 'context');
-    renderHistory(res.history || []);
-  });
-}
-
-function showPlatformHotkey() {
-  // Reflect the actual configured shortcut when available.
-  if (chrome.commands && chrome.commands.getAll) {
-    chrome.commands.getAll(function (cmds) {
-      var cmd = (cmds || []).find(function (c) { return c.name === 'toggle-inspect'; });
-      if (cmd && cmd.shortcut) els.hotkey.textContent = cmd.shortcut;
-      else if (!isMac()) els.hotkey.textContent = 'Ctrl+Shift+E';
-    });
-  } else if (!isMac()) {
-    els.hotkey.textContent = 'Ctrl+Shift+E';
-  }
-}
-
 function isMac() {
   var p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
   return /mac/i.test(p);
+}
+
+function defaultCombo() {
+  return isMac()
+    ? { ctrl: false, alt: false, shift: true, meta: true, code: 'KeyE' }
+    : { ctrl: true, alt: false, shift: true, meta: false, code: 'KeyE' };
+}
+
+function init() {
+  chrome.storage.local.get({ mode: 'context', history: [], shortcut: null }, function (res) {
+    setActiveMode(res.mode || 'context');
+    renderHistory(res.history || []);
+    currentCombo = res.shortcut && res.shortcut.code ? res.shortcut : defaultCombo();
+    renderShortcut(currentCombo);
+  });
 }
 
 function wire() {
@@ -60,7 +59,6 @@ function wire() {
     btn.addEventListener('click', function () {
       selectMode(btn.getAttribute('data-mode'), false);
     });
-    // WAI-ARIA radiogroup keyboard pattern: arrows move selection + focus.
     btn.addEventListener('keydown', function (e) {
       var i = els.segBtns.indexOf(btn);
       var next = -1;
@@ -74,14 +72,82 @@ function wire() {
     });
   });
 
-  els.shortcut.addEventListener('click', function () {
-    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+  els.shortcutBtn.addEventListener('click', startRecording);
+  els.resetShortcut.addEventListener('click', function () {
+    currentCombo = defaultCombo();
+    chrome.storage.local.set({ shortcut: currentCombo });
+    renderShortcut(currentCombo);
   });
 
   els.clear.addEventListener('click', function () {
     chrome.storage.local.set({ history: [] }, function () { renderHistory([]); });
   });
 }
+
+// ----- shortcut recorder ---------------------------------------------------
+
+function startRecording() {
+  if (recording) return;
+  recording = true;
+  els.shortcutBtn.classList.add('recording');
+  els.shortcutBtn.textContent = 'Press keys…';
+  document.addEventListener('keydown', onRecordKey, true);
+}
+
+function stopRecording() {
+  recording = false;
+  els.shortcutBtn.classList.remove('recording');
+  document.removeEventListener('keydown', onRecordKey, true);
+  renderShortcut(currentCombo);
+}
+
+function onRecordKey(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (MODIFIER_KEYS.indexOf(e.key) !== -1) return; // wait for the real key
+  if (e.key === 'Escape') { stopRecording(); return; }
+  if (!(e.ctrlKey || e.altKey || e.metaKey)) {
+    els.shortcutBtn.textContent = isMac() ? 'Add ⌘ ⌃ or ⌥' : 'Add Ctrl/Alt';
+    return; // require a non-shift modifier so it doesn't fire on plain typing
+  }
+  currentCombo = { ctrl: e.ctrlKey, alt: e.altKey, shift: e.shiftKey, meta: e.metaKey, code: e.code };
+  chrome.storage.local.set({ shortcut: currentCombo });
+  stopRecording();
+}
+
+function renderShortcut(combo) {
+  var label = comboToLabel(combo);
+  els.shortcutBtn.textContent = label;
+  els.hotkey.textContent = label;
+}
+
+function comboToLabel(c) {
+  if (!c || !c.code) return '—';
+  if (isMac()) {
+    return (c.ctrl ? '⌃' : '') + (c.alt ? '⌥' : '') + (c.shift ? '⇧' : '') + (c.meta ? '⌘' : '') + keyLabel(c.code);
+  }
+  var parts = [];
+  if (c.ctrl) parts.push('Ctrl');
+  if (c.alt) parts.push('Alt');
+  if (c.shift) parts.push('Shift');
+  if (c.meta) parts.push('Meta');
+  parts.push(keyLabel(c.code));
+  return parts.join('+');
+}
+
+function keyLabel(code) {
+  var m;
+  if ((m = /^Key([A-Z])$/.exec(code))) return m[1];
+  if ((m = /^Digit(\d)$/.exec(code))) return m[1];
+  var map = {
+    Comma: ',', Period: '.', Slash: '/', Semicolon: ';', Quote: "'",
+    BracketLeft: '[', BracketRight: ']', Backslash: '\\', Minus: '-', Equal: '=',
+    Backquote: '`', Space: 'Space', Enter: 'Enter', Tab: 'Tab',
+  };
+  return map[code] || code;
+}
+
+// ----- modes ---------------------------------------------------------------
 
 function selectMode(mode, focus) {
   setActiveMode(mode, focus);
@@ -92,12 +158,13 @@ function setActiveMode(mode, focus) {
   els.segBtns.forEach(function (btn) {
     var on = btn.getAttribute('data-mode') === mode;
     btn.setAttribute('aria-checked', on ? 'true' : 'false');
-    // Roving tabindex: only the checked radio is in the tab order.
-    btn.tabIndex = on ? 0 : -1;
+    btn.tabIndex = on ? 0 : -1; // roving tabindex
     if (on && focus) btn.focus();
   });
   els.modeHint.textContent = MODE_HINTS[mode] || '';
 }
+
+// ----- history -------------------------------------------------------------
 
 function renderHistory(history) {
   els.list.textContent = '';

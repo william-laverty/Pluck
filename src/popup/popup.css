@@ -83,6 +83,34 @@ body {
   padding: 2px 6px;
 }
 
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.shortcut-label { font-size: 12px; color: var(--text-soft); }
+.shortcut-chip {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 70px;
+  text-align: center;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  border-radius: 7px;
+  padding: 5px 11px;
+  cursor: pointer;
+  transition: background 110ms ease, border-color 110ms ease, color 110ms ease;
+}
+.shortcut-chip:hover { background: var(--bg-hover); }
+.shortcut-chip.recording {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+
 .modes { margin-bottom: 16px; }
 .modes-label,
 .history-head span:first-child {
@@ -217,6 +245,7 @@ body {
 /* visible keyboard focus for all interactive controls */
 .start:focus-visible,
 .seg-btn:focus-visible,
+.shortcut-chip:focus-visible,
 .history-item:focus-visible,
 .link:focus-visible {
   outline: 2px solid var(--accent);

@@ -16,7 +16,7 @@ function bad(msg) { console.log('  ✗ ' + msg); fail++; }
 try {
   var m = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
   if (m.manifest_version !== 3) bad('manifest_version must be 3'); else ok('manifest v3');
-  ['name', 'version', 'action', 'background', 'permissions', 'host_permissions', 'commands'].forEach(function (k) {
+  ['name', 'version', 'action', 'background', 'permissions', 'host_permissions', 'content_scripts'].forEach(function (k) {
     if (!(k in m)) bad('manifest missing "' + k + '"'); else ok('manifest has ' + k);
   });
   m.permissions.forEach(function (p) {
@@ -24,9 +24,14 @@ try {
   });
   if (!(m.host_permissions || []).includes('<all_urls>')) bad('host_permissions must include <all_urls>');
   else ok('host_permissions grants <all_urls>');
+  var cs = (m.content_scripts || [])[0] || {};
+  if (!(cs.matches || []).includes('<all_urls>')) bad('content_scripts must match <all_urls>');
+  else ok('content_scripts injected on <all_urls>');
+  if (!(cs.js || []).some(function (f) { return /shortcut\.js$/.test(f); })) bad('content_scripts must include shortcut.js');
   // referenced files exist
   var refs = [m.background.service_worker, m.action.default_popup]
-    .concat(Object.values(m.icons || {}));
+    .concat(Object.values(m.icons || {}))
+    .concat(cs.js || []);
   refs.forEach(function (r) {
     if (!fs.existsSync(path.join(root, r))) bad('manifest references missing file: ' + r);
   });
