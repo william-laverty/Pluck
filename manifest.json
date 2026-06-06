@@ -3,7 +3,8 @@
   "name": "Pluck",
   "version": "1.0.0",
   "description": "Hit a hotkey, click any element, and a Claude-Code-ready selector lands on your clipboard.",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": ["scripting", "storage"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_title": "Pluck — click an element to copy its selector",

@@ -16,12 +16,14 @@ function bad(msg) { console.log('  ✗ ' + msg); fail++; }
 try {
   var m = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
   if (m.manifest_version !== 3) bad('manifest_version must be 3'); else ok('manifest v3');
-  ['name', 'version', 'action', 'background', 'permissions', 'commands'].forEach(function (k) {
+  ['name', 'version', 'action', 'background', 'permissions', 'host_permissions', 'commands'].forEach(function (k) {
     if (!(k in m)) bad('manifest missing "' + k + '"'); else ok('manifest has ' + k);
   });
   m.permissions.forEach(function (p) {
-    if (['activeTab', 'scripting', 'storage'].indexOf(p) === -1) bad('unexpected permission: ' + p);
+    if (['scripting', 'storage'].indexOf(p) === -1) bad('unexpected permission: ' + p);
   });
+  if (!(m.host_permissions || []).includes('<all_urls>')) bad('host_permissions must include <all_urls>');
+  else ok('host_permissions grants <all_urls>');
   // referenced files exist
   var refs = [m.background.service_worker, m.action.default_popup]
     .concat(Object.values(m.icons || {}));

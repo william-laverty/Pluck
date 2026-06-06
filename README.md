@@ -54,7 +54,7 @@ The popup also keeps your **last 10 plucks** — click any to copy it again.
 | `src/content/styles.js` | Overlay styles (adopted into the shadow root). |
 | `src/popup/*` | Format toggle, hotkey reminder, copy history. |
 
-**Permissions:** `activeTab`, `scripting`, `storage`. No host permissions, no network — nothing leaves your machine. Pluck only touches a page when you explicitly invoke it, and only the tab you invoked it on.
+**Permissions:** `scripting`, `storage`, and `host_permissions: <all_urls>`. The broad host access is deliberate: it's what lets the keyboard shortcut inject on the **first** press on any site. (The leaner `activeTab` only grants page access *after* you click the icon / open the popup, so a cold shortcut press silently did nothing — see the note below.) No network is used; nothing leaves your machine — Pluck only reads the DOM when you invoke it.
 
 ## Develop
 
@@ -66,7 +66,7 @@ npm test               # unit tests: selector engine, formatter, service worker
 
 # real-browser integration (needs a static server):
 python3 -m http.server 8753 &
-node test/integration.js   # overlay, selection, nth-of-type, clipboard, click-suppression
+npm run test:e2e       # overlay, selection, nth-of-type, SVG, clipboard, click-suppression
 ```
 
 No build step — it's vanilla JS/CSS/HTML, loadable unpacked as-is.
