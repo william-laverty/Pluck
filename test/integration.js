@@ -84,12 +84,18 @@ async function main() {
 
   // ---- 2. overlay builds on activate --------------------------------------
   console.log('\nOverlay + interaction:');
-  var hasHost = await page.evaluate(function () {
+  var overlay = await page.evaluate(function () {
     window.__pluck.controller.activate();
-    return !!document.querySelector('pluck-host') &&
-           !!document.querySelector('pluck-host').shadowRoot.querySelector('.pluck-box');
+    var host = document.querySelector('pluck-host');
+    return {
+      built: !!host && !!host.shadowRoot.querySelector('.pluck-box'),
+      zIndex: host ? getComputedStyle(host).zIndex : null,
+      position: host ? getComputedStyle(host).position : null,
+    };
   });
-  check('overlay host + shadow box built on activate', hasHost);
+  check('overlay host + shadow box built on activate', overlay.built);
+  check('host carries max z-index so it paints above page content', overlay.zIndex === '2147483647', 'z=' + overlay.zIndex);
+  check('host is position:fixed', overlay.position === 'fixed', overlay.position);
 
   // helper: activate, fire synthetic mousemove+click at a selector, read result
   async function pluck(target) {

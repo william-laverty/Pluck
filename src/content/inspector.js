@@ -93,7 +93,17 @@
 
     function buildOverlay() {
       host = document.createElement('pluck-host');
-      host.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;margin:0;padding:0;border:0;';
+      // The max z-index MUST live on the host (the page's stacking context), not
+      // only on .pluck-layer inside the shadow — otherwise any page element with
+      // a positive z-index paints over the whole overlay. !important + the
+      // display/visibility locks defend against hostile page CSS (incl. rules
+      // like `:not(:defined){display:none}` that hide unknown custom elements).
+      host.style.cssText = [
+        'position: fixed', 'top: 0', 'left: 0', 'width: 0', 'height: 0',
+        'margin: 0', 'padding: 0', 'border: 0', 'z-index: 2147483647',
+        'display: block', 'visibility: visible', 'opacity: 1',
+        'pointer-events: none', 'transform: none', 'filter: none', 'clip-path: none',
+      ].map(function (d) { return d + ' !important'; }).join('; ') + ';';
       shadow = host.attachShadow({ mode: 'open' });
 
       var style = document.createElement('style');
