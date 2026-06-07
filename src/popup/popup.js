@@ -185,8 +185,14 @@ function renderHistory(history) {
 
     var meta = document.createElement('span');
     meta.className = 'h-meta';
-    var warn = item.isUnique === false ? '⚠ may match multiple · ' : '';
-    meta.textContent = warn + hostOf(item.url) + ' · ' + timeAgo(item.ts);
+    if (item.isUnique === false) {
+      var warnSpan = document.createElement('span');
+      warnSpan.className = 'h-warn';
+      warnSpan.textContent = '⚠ may match multiple';
+      meta.appendChild(warnSpan);
+      meta.appendChild(document.createTextNode(' · '));
+    }
+    meta.appendChild(document.createTextNode(hostOf(item.url) + ' · ' + timeAgo(item.ts)));
 
     btn.appendChild(sel);
     btn.appendChild(meta);
