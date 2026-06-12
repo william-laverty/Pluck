@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Pluck",
+  "name": "Pluck — copy any element for Claude Code",
   "version": "1.2.0",
   "description": "Hit a hotkey, click any element, and a Claude-Code-ready selector lands on your clipboard.",
+  "homepage_url": "https://getpluck.vercel.app",
   "permissions": ["scripting", "storage"],
   "host_permissions": ["<all_urls>"],
   "action": {

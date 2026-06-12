@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Solstice — Project tracking for small teams</title>
+<style>
+  /* A realistic, pretty page for Pluck's store screenshots & demo GIF.
+     Accent is teal so Pluck's indigo overlay reads clearly on top. */
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #0f172a;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 32px; }
+
+  nav { border-bottom: 1px solid #e2e8f0; background: rgba(255,255,255,0.9); }
+  .nav-inner { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 16px; letter-spacing: -0.2px; }
+  .logo-mark { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #14b8a6, #0d9488); display: inline-block; }
+  .nav-link { color: #475569; text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-link:hover { color: #0f172a; }
+  .nav-spacer { flex: 1; }
+  .btn { border: 0; border-radius: 9px; padding: 9px 16px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-ghost { background: transparent; color: #0f172a; border: 1px solid #cbd5e1; }
+  .btn-primary { background: #0d9488; color: #fff; box-shadow: 0 1px 2px rgba(13,148,136,0.4); }
+
+  .hero { padding: 72px 0 56px; }
+  .hero-grid { display: grid; grid-template-columns: 1.04fr 0.96fr; gap: 52px; align-items: center; }
+  .hero-kicker { display: inline-block; font-size: 12.5px; font-weight: 600; color: #0d9488; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 999px; padding: 4px 12px; margin-bottom: 20px; }
+  .hero h1 { font-size: 44px; line-height: 1.1; letter-spacing: -1.3px; font-weight: 750; }
+  .hero p.sub { margin-top: 16px; font-size: 17px; color: #475569; max-width: 480px; }
+  .cta { display: flex; gap: 12px; margin-top: 28px; }
+  .cta .btn { padding: 13px 22px; font-size: 15px; border-radius: 11px; }
+  .stats { display: flex; gap: 28px; margin-top: 40px; }
+  .stat { border-left: 2px solid #e2e8f0; padding-left: 16px; }
+  .stat b { display: block; font-size: 21px; letter-spacing: -0.4px; }
+  .stat span { font-size: 13px; color: #64748b; }
+
+  /* app-window mock filling the hero's right column */
+  .app-mock { border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; box-shadow: 0 24px 60px -28px rgba(15,23,42,0.25), 0 4px 14px -8px rgba(15,23,42,0.1); overflow: hidden; }
+  .app-bar { display: flex; align-items: center; gap: 6px; padding: 11px 14px; border-bottom: 1px solid #eef2f7; background: #f8fafc; }
+  .app-bar i { width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; }
+  .app-bar i:nth-child(1) { background: #fda4af; } .app-bar i:nth-child(2) { background: #fcd34d; } .app-bar i:nth-child(3) { background: #86efac; }
+  .app-bar span { margin-left: 8px; font-size: 11.5px; color: #94a3b8; font-weight: 500; }
+  .app-cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 14px; }
+  .app-col h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin-bottom: 9px; display: flex; align-items: center; gap: 6px; }
+  .app-col h4 b { font-weight: 600; color: #475569; }
+  .pill { display: inline-block; min-width: 18px; text-align: center; background: #f1f5f9; border-radius: 999px; font-size: 10px; padding: 1px 5px; color: #64748b; }
+  .task { border: 1px solid #eef2f7; border-radius: 9px; padding: 9px 10px; margin-bottom: 8px; background: #fff; box-shadow: 0 1px 2px rgba(15,23,42,0.03); }
+  .task .t-line { height: 7px; border-radius: 4px; background: #e2e8f0; margin-bottom: 6px; }
+  .task .t-line.short { width: 62%; margin-bottom: 0; }
+  .task .t-meta { display: flex; gap: 5px; margin-top: 7px; }
+  .task .tag { height: 14px; border-radius: 4px; padding: 0 6px; font-size: 9.5px; line-height: 14px; font-weight: 600; }
+  .tag.teal { background: #ccfbf1; color: #0f766e; }
+  .tag.amber { background: #fef3c7; color: #b45309; }
+  .tag.sky { background: #e0f2fe; color: #0369a1; }
+  .task.done { opacity: 0.62; }
+  .task.active { border-color: #99f6e4; box-shadow: 0 0 0 3px rgba(20,184,166,0.12); }
+
+  .features { padding: 28px 0 90px; }
+  .features h2 { font-size: 28px; letter-spacing: -0.6px; margin-bottom: 26px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; background: #fff; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+  .card .icon { width: 36px; height: 36px; border-radius: 10px; background: #f0fdfa; color: #0d9488; display: flex; align-items: center; justify-content: center; font-size: 17px; margin-bottom: 14px; }
+  .card h3 { font-size: 16px; letter-spacing: -0.2px; margin-bottom: 6px; }
+  .card p { font-size: 14px; color: #64748b; }
+
+  footer { border-top: 1px solid #e2e8f0; padding: 26px 0; color: #94a3b8; font-size: 13px; }
+
+  /* fake cursor for recorded demos (hidden unless .demo-cursor-on) */
+  #demo-cursor {
+    position: fixed; left: 0; top: 0; width: 22px; height: 22px; z-index: 2147483646;
+    pointer-events: none; display: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+  }
+  body.demo-cursor-on #demo-cursor { display: block; }
+</style>
+</head>
+<body>
+  <svg id="demo-cursor" viewBox="0 0 24 24"><path d="M5.5 3.2l13.2 7.6-5.6 1.5 3.2 6.7-2.6 1.2-3.2-6.7-4.4 3.9z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+
+  <nav>
+    <div class="wrap nav-inner">
+      <span class="logo"><span class="logo-mark"></span>Solstice</span>
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#pricing">Pricing</a>
+      <a class="nav-link" href="#docs">Docs</a>
+      <span class="nav-spacer"></span>
+      <button class="btn btn-ghost">Sign in</button>
+      <a class="btn btn-primary" href="#start" style="text-decoration:none;display:inline-block">Start free</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="hero-kicker">New · Timeline view</span>
+        <h1>Ship projects without the project management.</h1>
+        <p class="sub">Solstice keeps small teams moving — tasks, docs and timelines in one quiet workspace that stays out of your way.</p>
+        <div class="cta">
+          <button class="btn btn-primary">Get started</button>
+          <button class="btn btn-ghost">Live demo</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>12,400+</b><span>teams on board</span></div>
+          <div class="stat"><b>99.99%</b><span>uptime</span></div>
+          <div class="stat"><b>4.9/5</b><span>average review</span></div>
+        </div>
+      </div>
+      <div class="app-mock" aria-hidden="true">
+        <div class="app-bar"><i></i><i></i><i></i><span>solstice — sprint 14</span></div>
+        <div class="app-cols">
+          <div class="app-col">
+            <h4><b>To do</b> <span class="pill">4</span></h4>
+            <div class="task"><div class="t-line"></div><div class="t-line short"></div><div class="t-meta"><span class="tag sky">design</span></div></div>
+            <div class="task"><div class="t-line"></div><div class="t-line short"></div><div class="t-meta"><span class="tag amber">api</span></div></div>
+            <div class="task"><div class="t-line short"></div></div>
+          </div>
+          <div class="app-col">
+            <h4><b>In progress</b> <span class="pill">2</span></h4>
+            <div class="task active"><div class="t-line"></div><div class="t-line short"></div><div class="t-meta"><span class="tag teal">web</span><span class="tag sky">design</span></div></div>
+            <div class="task"><div class="t-line"></div><div class="t-line short"></div><div class="t-meta"><span class="tag amber">api</span></div></div>
+          </div>
+          <div class="app-col">
+            <h4><b>Done</b> <span class="pill">7</span></h4>
+            <div class="task done"><div class="t-line"></div><div class="t-line short"></div></div>
+            <div class="task done"><div class="t-line short"></div></div>
+            <div class="task done"><div class="t-line"></div><div class="t-line short"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="features" id="features">
+    <div class="wrap">
+      <h2>Everything in its right place</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="icon">▦</div>
+          <h3>Boards that breathe</h3>
+          <p>Kanban without the clutter. Group by sprint, owner or priority with one keystroke.</p>
+        </div>
+        <div class="card">
+          <div class="icon">✦</div>
+          <h3>Docs, attached</h3>
+          <p>Specs live next to the tasks they describe — never in a second app, never stale.</p>
+        </div>
+        <div class="card">
+          <div class="icon">◷</div>
+          <h3>Timelines that update themselves</h3>
+          <p>Estimates roll up automatically. See the slip the day it happens, not the week after.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">© 2026 Solstice Labs · Privacy · Terms</div>
+  </footer>
+</body>
+</html>
