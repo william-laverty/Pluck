@@ -49,10 +49,12 @@ try {
   else ok('icon' + s + '.png valid');
 });
 
-// 3. syntax-check every JS file
+// 3. syntax-check every extension JS file (site/, store/, dist/ are not
+//    extension code — the site has its own toolchain and gates)
+var SKIP_DIRS = { node_modules: 1, site: 1, store: 1, dist: 1 };
 function walk(dir, acc) {
   fs.readdirSync(dir).forEach(function (name) {
-    if (name === 'node_modules' || name === '.git') return;
+    if (SKIP_DIRS[name] === 1 || name.charAt(0) === '.') return;
     var full = path.join(dir, name);
     var st = fs.statSync(full);
     if (st.isDirectory()) walk(full, acc);

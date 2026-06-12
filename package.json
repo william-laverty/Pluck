@@ -1,14 +1,20 @@
 {
   "name": "pluck",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "description": "Hit a hotkey, click any element, and a Claude-Code-ready selector lands on your clipboard.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/william-laverty/pluck.git"
+  },
   "type": "commonjs",
   "scripts": {
     "icons": "node scripts/make-icons.js",
     "check": "node scripts/check.js",
     "test": "node --test test/*.test.js",
-    "test:e2e": "node test/integration.js"
+    "test:e2e": "node test/integration.js",
+    "package": "node scripts/package.js"
   },
   "devDependencies": {
     "jsdom": "^24.1.3",

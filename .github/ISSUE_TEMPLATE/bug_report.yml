@@ -1,0 +1,47 @@
+name: Bug report
+description: Something broke, or a selector came out wrong
+labels: [bug]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      description: The page where it happened. For selector-quality bugs this is the single most useful field — most engine bugs are one weird page away from reproducible.
+      placeholder: https://example.com/page
+    validations:
+      required: false
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what Pluck produced, and what you expected. Paste the copied output if you have it.
+      placeholder: |
+        Plucked the "Add to cart" button. Got `div > div > div:nth-of-type(3)` —
+        expected something anchored on `button.add-to-cart`.
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Brave
+        - Arc
+        - Other Chromium
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Pluck version
+      description: From chrome://extensions (Developer mode shows the version).
+      placeholder: 1.2.0
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Quick checks
+      options:
+        - label: I refreshed the tab after installing/updating Pluck (already-open tabs need one refresh).
+        - label: This isn't a restricted page (chrome://, the Chrome Web Store) where extensions can't run.

@@ -1,0 +1,25 @@
+name: Feature request
+description: An idea that would make Pluck more useful
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The friction
+      description: What are you doing today that's slower or clumsier than it should be?
+      placeholder: When I pluck inside a data table I always want the row, not the cell…
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should Pluck do? Keep Pluck's constraints in mind — no network, no new permissions without strong cause, vanilla JS.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Workarounds you've tried
+    validations:
+      required: false
