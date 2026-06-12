@@ -9,17 +9,23 @@ Pluck is a Manifest V3 Chromium extension: press a hotkey, click any element, an
 ## Commands
 
 ```bash
-npm run check          # static gate: validates manifest, icon PNG signatures, node --check on every .js
+npm run check          # static gate: validates manifest, icon PNG signatures, node --check on extension .js
 npm test               # unit tests (node:test + jsdom): selector engine, formatter, service worker
 node --test test/selector.test.js   # run a single unit test file
 npm run icons          # regenerate icons/*.png from scripts/make-icons.js
+npm run package        # gate + build dist/pluck-v<version>.zip (Chrome Web Store upload)
 
 # integration (real Chromium via Playwright) — needs a static server first:
 python3 -m http.server 8753 &
 npm run test:e2e       # loads unpacked extension, drives content scripts on test/fixture.html
+node scripts/store-assets.js   # regenerate store screenshots + README demo.gif (real captures, headed)
 ```
 
-Run `npm run check && npm test` before considering any change done. The e2e suite is run on demand.
+Run `npm run check && npm test` before considering any change done. The e2e suite is run on demand. CI (`.github/workflows/ci.yml`) runs gate + unit + e2e + package on every push/PR.
+
+### Marketing site (`site/`)
+
+Separate toolchain: Next.js 16 (App Router) + Tailwind v4, deployed to Vercel as project **getpluck** (https://getpluck.vercel.app, personal scope). `cd site && npm run build` to verify; `vercel deploy --prod --yes` from `site/` to ship. `site/src/lib/pluckEngine.ts` is a TS port of the selector engine core for the landing page's live playground — if you change the engine's observable behavior in `src/content/selector.js`, mirror it there. `site/src/lib/seo.ts` is the single source for URLs/copy/JSON-LD; the FAQ array feeds both the rendered accordion and the FAQPage schema. The site is excluded from the extension's `check.js` walk.
 
 ## Architecture
 
@@ -56,4 +62,5 @@ The non-trivial core. `buildSelector(el, doc)` returns `{ headline, unique, isUn
 - `'use strict'`, `var`, and ES5-style function syntax throughout — match it; this is deliberately dependency-free vanilla JS, not a transpiled codebase.
 - Permissions are intentionally minimal (`scripting`, `storage`, `host_permissions: <all_urls>`). `scripts/check.js` *rejects* any unexpected permission and fails if `shortcut.js` or `<all_urls>` is missing. Don't add a permission without updating that gate and the rationale in the README.
 - No network. Nothing leaves the machine — Pluck only reads the DOM on invocation. Keep it that way.
-- `manifest.json` and `package.json` carry independent `version` fields (currently out of sync); manifest is the one that ships.
+- `manifest.json` and `package.json` versions are kept in sync (both 1.2.0); manifest is the one that ships. Bump both together, and add a `CHANGELOG.md` entry.
+- Store submission materials live in `store/` (LISTING.md runbook, generated assets, the screenshot demo page); `PRIVACY.md` mirrors the live policy at https://getpluck.vercel.app/privacy. Positioning is agent-agnostic: "for your AI agent", with Claude Code/Cursor/Copilot as examples.
