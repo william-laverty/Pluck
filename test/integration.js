@@ -68,19 +68,23 @@ async function main() {
   var toggleByKey = await page.evaluate(function () {
     var c = window.__pluck.controller;
     if (c.isActive()) c.deactivate(false);
+    // the default combo is platform-dependent (⌘⇧E on mac, Ctrl+Shift+E
+    // elsewhere) — fire whichever this browser's platform selects
+    var isMac = /mac/i.test((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '');
     function fire() {
       window.dispatchEvent(new KeyboardEvent('keydown', {
-        code: 'KeyE', key: 'E', metaKey: true, shiftKey: true, bubbles: true, cancelable: true,
+        code: 'KeyE', key: 'E', metaKey: isMac, ctrlKey: !isMac, shiftKey: true,
+        bubbles: true, cancelable: true,
       }));
     }
     fire();
     var on = c.isActive() && !!document.querySelector('pluck-host');
     fire();
-    var off = !c.isActive();
+    var off = on && !c.isActive();
     return { on: on, off: off };
   });
-  check('⌘⇧E keydown activates inspect mode (no service worker / command)', toggleByKey.on);
-  check('⌘⇧E keydown again toggles it off', toggleByKey.off);
+  check('default shortcut keydown activates inspect mode (no service worker / command)', toggleByKey.on);
+  check('default shortcut keydown again toggles it off', toggleByKey.off);
 
   // ---- 2. overlay builds on activate --------------------------------------
   console.log('\nOverlay + interaction:');
