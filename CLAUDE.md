@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Pluck is a Manifest V3 Chromium extension: press a hotkey, click any element, and a Claude-Code-ready CSS selector lands on the clipboard. **Vanilla JS/CSS/HTML — no build step, no framework, no bundler.** Load it unpacked from the repo root (`chrome://extensions` → Developer mode → Load unpacked).
+Pluck is a Manifest V3 Chromium extension: press a hotkey, click any element, and an agent-ready CSS selector lands on the clipboard (for pasting into Claude Code, Cursor, Copilot or any AI coding agent). **Vanilla JS/CSS/HTML — no build step, no framework, no bundler.** Load it unpacked from the repo root (`chrome://extensions` → Developer mode → Load unpacked).
 
 ## Commands
 

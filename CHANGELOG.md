@@ -31,7 +31,7 @@ First public release. 🎉
 
 Initial version.
 
-- Press a hotkey, click any element, get a Claude-Code-ready CSS selector on the clipboard.
+- Press a hotkey, click any element, get an agent-ready CSS selector on the clipboard.
 - Verified-unique selector engine: `querySelectorAll`-checked uniqueness, ancestor climbing, `:nth-of-type` only when needed, junk-class filtering (`css-…`, `sc-…`, `jsx-…`, hashy tokens), SVG/MathML tag-case preservation, `CSS.escape` with spec-accurate fallback.
 - Three copy formats: **Selector**, **+ Context** (default), **Full** (adds key computed styles).
 - ↑/↓ parent/child refinement, Enter to capture, Esc to cancel.

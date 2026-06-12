@@ -2,7 +2,7 @@
   "name": "pluck",
   "version": "1.2.0",
   "private": true,
-  "description": "Hit a hotkey, click any element, and a Claude-Code-ready selector lands on your clipboard.",
+  "description": "Hit a hotkey, click any element, and an agent-ready CSS selector lands on your clipboard.",
   "license": "MIT",
   "repository": {
     "type": "git",

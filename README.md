@@ -2,7 +2,7 @@
 
 # Pluck
 
-**Hit a hotkey, click any element, and a Claude-Code-ready description of it lands on your clipboard.**
+**Hit a hotkey, click any element, and an agent-ready description of it lands on your clipboard.**
 
 [![CI](https://github.com/william-laverty/pluck/actions/workflows/ci.yml/badge.svg)](https://github.com/william-laverty/pluck/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-1.2.0-6366f1)](CHANGELOG.md)
@@ -17,9 +17,9 @@
 
 ## Why
 
-When you build web UI with an AI coding agent, you spend all day telling it *which element you mean*. The loop today: open DevTools → Inspect → read the class soup → copy it → paste it → describe it anyway. Five steps, dozens of times a session.
+When you build web UI with an AI coding agent — Claude Code, Cursor, Copilot, whatever's next — you spend all day telling it *which element you mean*. The loop today: open DevTools → Inspect → read the class soup → copy it → paste it → describe it anyway. Five steps, dozens of times a session.
 
-Pluck makes it one gesture. Press the shortcut, click the element, paste. The clipboard gets a **verified-unique CSS selector** plus just enough context for Claude Code (or any agent) to pinpoint the element in your source.
+Pluck makes it one gesture. Press the shortcut, click the element, paste. The clipboard gets a **verified-unique CSS selector** plus just enough context for your agent to pinpoint the element in your source.
 
 ## Install
 

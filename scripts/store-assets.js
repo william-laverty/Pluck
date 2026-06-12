@@ -280,7 +280,7 @@ function promoTileHtml() {
     '  <span class="mark" style="width:64px;height:64px">' + markSvg(38) + '</span>' +
     '  <div style="font-size:30px;font-weight:750;letter-spacing:-0.8px">Pluck</div>' +
     '  <div style="font-size:13.5px;color:#c7c9d4;text-align:center;max-width:330px;line-height:1.45">' +
-    'Click any element → a Claude-Code-ready selector on your clipboard</div>' +
+    'Click any element → an agent-ready selector on your clipboard</div>' +
     '</div>';
 }
 
@@ -293,9 +293,9 @@ function marqueeHtml(shotUri) {
     '      <span style="font-size:40px;font-weight:750;letter-spacing:-1px">Pluck</span>' +
     '    </div>' +
     '    <div style="font-size:23px;font-weight:650;letter-spacing:-0.5px;line-height:1.25;margin-bottom:12px">' +
-    'Hit a hotkey, click any element —<br>paste it straight into Claude&nbsp;Code.</div>' +
-    '    <div style="font-size:14.5px;color:#9ca3af;line-height:1.55">Verified-unique CSS selectors with just enough context. ' +
-    'No DevTools digging. No network. Works in Chrome, Edge, Brave and Arc.</div>' +
+    'Hit a hotkey, click any element —<br>paste it straight to your AI agent.</div>' +
+    '    <div style="font-size:14.5px;color:#9ca3af;line-height:1.55">Verified-unique CSS selectors with just enough context for ' +
+    'Claude Code, Cursor or Copilot. No DevTools digging. No network. Works in Chrome, Edge, Brave and Arc.</div>' +
     '  </div>' +
     '  <img src="' + shotUri + '" style="flex:1;min-width:0;border-radius:14px;' +
     'box-shadow:0 30px 90px -24px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.12)">' +

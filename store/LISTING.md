@@ -8,8 +8,8 @@ Everything needed to publish Pluck, field by field. Build the upload with `npm r
 
 | Field | Value |
 |---|---|
-| **Title** | `Pluck — copy any element for Claude Code` *(from the manifest — automatic)* |
-| **Summary** | `Hit a hotkey, click any element, and a Claude-Code-ready selector lands on your clipboard.` *(from the manifest — automatic)* |
+| **Title** | `Pluck — copy any element for your AI agent` *(from the manifest — automatic)* |
+| **Summary** | `Hit a hotkey, click any element, and an agent-ready CSS selector lands on your clipboard. Built for the AI-assisted dev loop.` *(from the manifest — automatic)* |
 | **Category** | Developer Tools |
 | **Language** | English |
 | **Homepage URL** | https://getpluck.vercel.app |
@@ -20,7 +20,7 @@ Everything needed to publish Pluck, field by field. Build the upload with `npm r
 ```
 Pluck removes the slowest step of AI-assisted web development: telling your coding agent WHICH element you mean.
 
-Instead of opening DevTools, inspecting, reading the class soup and copying it into chat, you press one shortcut, click the element, and paste. Pluck puts a verified-unique CSS selector — plus just enough context for Claude Code (or any coding agent) to pinpoint the element in your source — straight on your clipboard.
+Instead of opening DevTools, inspecting, reading the class soup and copying it into chat, you press one shortcut, click the element, and paste. Pluck puts a verified-unique CSS selector — plus just enough context for your agent to pinpoint the element in your source — straight on your clipboard. Works with whatever you pair with: Claude Code, Cursor, Copilot, Codex, Windsurf, or a plain chat window.
 
 HOW IT WORKS
 
@@ -36,6 +36,8 @@ Three formats, switchable in the popup:
 • Selector — just the unique CSS selector.
 • + Context (default) — selector plus the element's text and opening tag, so your agent can grep for it.
 • Full — adds key computed styles (color, background, font, padding, radius) for "make this match" prompts.
+
+Paste any of them into your coding agent and it knows exactly what you're pointing at.
 
 A SELECTOR ENGINE THAT EARNS THE PASTE
 
