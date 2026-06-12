@@ -1,0 +1,22 @@
+# Pluck
+
+> Pluck is a free, open-source Chromium browser extension (MIT license) for AI-assisted web development. Press a keyboard shortcut (default ⌘⇧E / Ctrl+Shift+E), click any element on the page, and an agent-ready, verified-unique CSS selector — optionally with the element's text, opening tag and key computed styles — is copied to the clipboard, ready to paste into any AI coding agent (Claude Code, Cursor, GitHub Copilot, Codex, Windsurf, Aider, or a plain chat).
+
+Key facts:
+- Works in Chrome, Edge, Brave and Arc (any Chromium browser with Manifest V3).
+- The keyboard shortcut is handled by an in-page listener (declared content script), so it fires on the first press on any site — no service-worker wake-up. This makes it reliable even in Arc.
+- Selectors are verified against the live DOM: querySelectorAll must match exactly one node. Ancestors and :nth-of-type() are added only when needed. Machine-generated classes (css-1a2b3c, sc-…, jsx-…, hex/hashy tokens) are filtered out for readability. SVG/MathML tag case is preserved; identifiers are CSS-escaped.
+- Three copy formats: "Selector" (just the selector), "+ Context" (default: selector + element text + opening tag), "Full" (adds key computed styles).
+- ↑/↓ keys refine the selection to parent/first-child; Enter captures; Esc cancels. The selection click is suppressed so the page never reacts to it.
+- Privacy: zero network requests, no analytics, no accounts, no data collection. Stores only the format preference, custom shortcut and last 10 captures locally via chrome.storage.local.
+- Free and open source: https://github.com/william-laverty/pluck
+- Author: William Laverty (developer@william-laverty.com).
+
+## Pages
+
+- [Home](https://getpluck.vercel.app/): product overview, live interactive demo, format examples, selector-engine details, FAQ.
+- [Privacy Policy](https://getpluck.vercel.app/privacy): full privacy policy (summary: nothing leaves your machine).
+
+## Source
+
+- [GitHub repository](https://github.com/william-laverty/pluck): source code, install guide, changelog, contributor docs.
