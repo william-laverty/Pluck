@@ -13,7 +13,7 @@ Everything needed to publish Pluck, field by field. Build the upload with `npm r
 | **Category** | Developer Tools |
 | **Language** | English |
 | **Homepage URL** | https://getpluck.vercel.app |
-| **Support URL** | https://github.com/william-laverty/pluck/issues |
+| **Support URL** | https://getpluck.vercel.app/support |
 
 ### Detailed description (paste verbatim)
 

@@ -337,7 +337,7 @@ export default function Home() {
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-ink-soft" aria-label="Footer">
             <a className="transition-colors hover:text-ink" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
             <a className="transition-colors hover:text-ink" href={`${GITHUB_URL}/blob/main/CHANGELOG.md`} target="_blank" rel="noopener noreferrer">Changelog</a>
-            <a className="transition-colors hover:text-ink" href={`${GITHUB_URL}/issues`} target="_blank" rel="noopener noreferrer">Report an issue</a>
+            <Link className="transition-colors hover:text-ink" href="/support">Support</Link>
             <Link className="transition-colors hover:text-ink" href="/privacy">Privacy</Link>
           </nav>
         </div>
