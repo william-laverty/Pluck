@@ -1,17 +1,22 @@
 <div align="center">
 
+<img src="icons/icon128.png" width="88" height="88" alt="Pluck logo" />
+
 # Pluck
 
 **Hit a hotkey, click any element, and an agent-ready description of it lands on your clipboard.**
 
-[![CI](https://github.com/william-laverty/pluck/actions/workflows/ci.yml/badge.svg)](https://github.com/william-laverty/pluck/actions/workflows/ci.yml)
+[![CI](https://github.com/william-laverty/Pluck/actions/workflows/ci.yml/badge.svg)](https://github.com/william-laverty/Pluck/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-1.2.0-6366f1)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![No network](https://img.shields.io/badge/network-none-success)](PRIVACY.md)
+[![GitHub stars](https://img.shields.io/github/stars/william-laverty/Pluck?style=flat&color=6366f1&label=stars)](https://github.com/william-laverty/Pluck/stargazers)
 
 [Website](https://getpluck.vercel.app) · [Install](#install) · [How it works](#how-it-works) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md)
 
 ![Pluck in action](docs/demo.gif)
+
+⭐ **If Pluck saves you a DevTools detour, [give it a star](https://github.com/william-laverty/Pluck) — it's how other developers find it.**
 
 </div>
 
@@ -126,6 +131,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the ground rules (the short version: 
 - Custom format templates
 - "Copy as screenshot + selector" for visual prompts
 - Multi-select — pluck several elements into one block
+
+## Star Pluck
+
+Pluck is a free, solo, open-source project. If it earns a spot in your workflow, **[dropping a ⭐ on the repo](https://github.com/william-laverty/Pluck)** is the single best way to help more developers find it — and it genuinely makes the next feature more likely.
 
 ## License
 

@@ -328,18 +328,31 @@ export default function Home() {
 
       {/* ── Footer ─────────────────────────────────────────────────────── */}
       <footer className="border-t border-white/10 px-5 py-12">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-6 sm:flex-row">
-          <div className="flex items-center gap-2.5">
-            <PluckMark size={22} radius={6} />
-            <span className="text-[14px] font-semibold">Pluck</span>
-            <span className="text-[13px] text-ink-dim">© 2026 William Laverty · MIT</span>
+        <div className="mx-auto max-w-5xl">
+          <a
+            href={`${GITHUB_URL}/stargazers`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mx-auto mb-9 flex w-fit items-center gap-2.5 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-[14px] text-ink-soft transition-all duration-300 hover:border-white/35 hover:bg-[rgba(99,102,241,0.12)] hover:text-ink"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden className="text-accent-soft transition-transform duration-300 group-hover:scale-110">
+              <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+            If Pluck saved you a DevTools trip,&nbsp;<span className="font-semibold text-ink">star it on GitHub</span>
+          </a>
+          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+            <div className="flex items-center gap-2.5">
+              <PluckMark size={22} radius={6} />
+              <span className="text-[14px] font-semibold">Pluck</span>
+              <span className="text-[13px] text-ink-dim">© 2026 William Laverty · MIT</span>
+            </div>
+            <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-ink-soft" aria-label="Footer">
+              <a className="transition-colors hover:text-ink" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a className="transition-colors hover:text-ink" href={`${GITHUB_URL}/blob/main/CHANGELOG.md`} target="_blank" rel="noopener noreferrer">Changelog</a>
+              <Link className="transition-colors hover:text-ink" href="/support">Support</Link>
+              <Link className="transition-colors hover:text-ink" href="/privacy">Privacy</Link>
+            </nav>
           </div>
-          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-ink-soft" aria-label="Footer">
-            <a className="transition-colors hover:text-ink" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a className="transition-colors hover:text-ink" href={`${GITHUB_URL}/blob/main/CHANGELOG.md`} target="_blank" rel="noopener noreferrer">Changelog</a>
-            <Link className="transition-colors hover:text-ink" href="/support">Support</Link>
-            <Link className="transition-colors hover:text-ink" href="/privacy">Privacy</Link>
-          </nav>
         </div>
       </footer>
     </>
