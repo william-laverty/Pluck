@@ -174,64 +174,70 @@ export default function Home() {
       <Schema />
       <Header />
       <main id="top">
-        {/* ── Hero: framed rounded card floating on a soft canvas ─────────── */}
-        <section className="hero-canvas px-3 pt-[78px] pb-3 sm:px-4 sm:pb-4">
-          <div className="hero-card mx-auto max-w-6xl px-5 pt-16 pb-12 sm:px-10 sm:pt-24 sm:pb-16">
-            <div className="mx-auto max-w-4xl text-center">
-              <p
-                className="chip reveal mx-auto mb-7"
-                style={{ "--reveal-delay": "0s" } as React.CSSProperties}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                Free &amp; open source · Chrome · Edge · Brave · Arc
-              </p>
-              <h1
-                className="reveal mx-auto max-w-3xl text-[clamp(36px,5vw,62px)] leading-[1.06] font-semibold"
-                style={{ "--reveal-delay": "0.06s" } as React.CSSProperties}
-              >
-                Stop describing elements to your AI&nbsp;agent.{" "}
-                <span className="bg-gradient-to-r from-[#6366f1] via-[#4f46e5] to-[#4338ca] bg-clip-text text-transparent">
-                  Point at them.
-                </span>
-              </h1>
-              <p
-                className="reveal mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-ink-soft"
-                style={{ "--reveal-delay": "0.12s" } as React.CSSProperties}
-              >
-                Pluck is a browser extension for the AI-assisted dev loop: hit a hotkey, click any
-                element, and an agent-ready CSS selector lands on your clipboard. Paste it to Claude
-                Code, Cursor, Copilot — anything that reads text.
-              </p>
-              <div
-                className="reveal mt-9 flex flex-wrap items-center justify-center gap-3.5"
-                style={{ "--reveal-delay": "0.18s" } as React.CSSProperties}
-              >
-                <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="btn-solid">
-                  <GitHubGlyph />
-                  Get Pluck — it&apos;s free
-                </a>
-                <a
-                  href={`${GITHUB_URL}#install`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-line"
-                >
-                  Install guide <span aria-hidden>→</span>
-                </a>
-              </div>
-              <p
-                className="reveal mt-4 text-[12.5px] text-ink-dim"
-                style={{ "--reveal-delay": "0.24s" } as React.CSSProperties}
-              >
-                Chrome Web Store listing coming soon · loads unpacked in 30 seconds today
-              </p>
-            </div>
+        {/* ── Hero: full-bleed rounded card (heynox layout) — copy left, live demo right ── */}
+        <section className="hero-canvas p-3 sm:p-4">
+          <div className="hero-card relative flex min-h-[calc(100svh-24px)] flex-col overflow-hidden sm:min-h-[calc(100svh-32px)]">
+            <div className="flex flex-1 items-center px-6 pt-28 pb-12 sm:px-10 lg:px-16">
+              <div className="mx-auto grid w-full max-w-6xl items-center gap-y-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
+                {/* LEFT — copy + CTA */}
+                <div className="text-left">
+                  <p
+                    className="chip reveal mb-7"
+                    style={{ "--reveal-delay": "0s" } as React.CSSProperties}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    Free &amp; open source · Chrome · Edge · Brave · Arc
+                  </p>
+                  <h1
+                    className="reveal text-[clamp(32px,3.6vw,52px)] leading-[1.05] font-semibold"
+                    style={{ "--reveal-delay": "0.06s" } as React.CSSProperties}
+                  >
+                    Stop describing elements to your AI&nbsp;agent.{" "}
+                    <span className="bg-gradient-to-r from-[#6366f1] via-[#4f46e5] to-[#4338ca] bg-clip-text text-transparent">
+                      Point at them.
+                    </span>
+                  </h1>
+                  <p
+                    className="reveal mt-6 max-w-md text-[16.5px] leading-relaxed text-ink-soft"
+                    style={{ "--reveal-delay": "0.12s" } as React.CSSProperties}
+                  >
+                    Pluck is a browser extension for the AI-assisted dev loop: hit a hotkey, click any
+                    element, and an agent-ready CSS selector lands on your clipboard. Paste it to Claude
+                    Code, Cursor, Copilot — anything that reads text.
+                  </p>
+                  <div
+                    className="reveal mt-8 flex flex-wrap items-center gap-3.5"
+                    style={{ "--reveal-delay": "0.18s" } as React.CSSProperties}
+                  >
+                    <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="btn-solid">
+                      <GitHubGlyph />
+                      Get Pluck — it&apos;s free
+                    </a>
+                    <a
+                      href={`${GITHUB_URL}#install`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-line"
+                    >
+                      Install guide <span aria-hidden>→</span>
+                    </a>
+                  </div>
+                  <p
+                    className="reveal mt-4 text-[12.5px] text-ink-dim"
+                    style={{ "--reveal-delay": "0.24s" } as React.CSSProperties}
+                  >
+                    Chrome Web Store listing coming soon · loads unpacked in 30 seconds today
+                  </p>
+                </div>
 
-            <div
-              className="reveal mx-auto mt-14 max-w-3xl"
-              style={{ "--reveal-delay": "0.3s" } as React.CSSProperties}
-            >
-              <LiveDemo />
+                {/* RIGHT — live playground */}
+                <div
+                  className="reveal w-full"
+                  style={{ "--reveal-delay": "0.3s" } as React.CSSProperties}
+                >
+                  <LiveDemo />
+                </div>
+              </div>
             </div>
           </div>
         </section>
