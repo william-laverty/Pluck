@@ -37,7 +37,7 @@ export function FormatTabs() {
       <div
         role="tablist"
         aria-label="Copy format"
-        className="mx-auto mb-5 flex w-fit gap-1 rounded-full border border-white/10 bg-white/5 p-1"
+        className="mx-auto mb-5 flex w-fit gap-1 rounded-full border border-black/[0.06] bg-zinc-100 p-1"
       >
         {FORMATS.map((f) => (
           <button
@@ -47,8 +47,8 @@ export function FormatTabs() {
             onClick={() => setActive(f.key)}
             className={`rounded-full px-4 py-1.5 text-[13.5px] font-medium transition-colors duration-200 ${
               active === f.key
-                ? "bg-white text-[#0b0b14]"
-                : "text-ink-soft hover:bg-white/10 hover:text-ink"
+                ? "bg-white text-accent-soft shadow-[0_1px_3px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.03)]"
+                : "text-ink-soft hover:bg-black/[0.04] hover:text-ink"
             }`}
           >
             {f.name}
@@ -61,7 +61,7 @@ export function FormatTabs() {
           <i /><i /><i />
           <span className="ml-2 font-mono text-[11px] text-ink-soft">clipboard</span>
         </div>
-        <pre className="min-h-[148px] overflow-x-auto p-5 font-mono text-[13px] leading-[1.75] whitespace-pre-wrap text-[#d4d4d8]">
+        <pre className="min-h-[148px] overflow-x-auto p-5 font-mono text-[13px] leading-[1.75] whitespace-pre-wrap text-zinc-700">
           {current.output}
         </pre>
       </div>

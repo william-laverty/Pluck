@@ -151,7 +151,7 @@ export default function PrivacyPage() {
             </section>
           </div>
 
-          <div className="mt-14 border-t border-white/10 pt-8">
+          <div className="mt-14 border-t border-black/[0.08] pt-8">
             <Link href="/" className="btn-line">
               ← Back to Pluck
             </Link>

@@ -1,26 +1,30 @@
 @import "tailwindcss";
 
-/* ── Pluck design tokens — heynox-derived structure, indigo identity ────── */
+/* ── Pluck design tokens — light "indigo on paper" ──────────────────────────
+   Zinc neutrals on white (ato-mcp "Clinical" influence), Pluck's indigo kept
+   as the single identity accent, used sparingly: the logo, dots, eyebrows,
+   the primary CTA, code highlights. Hierarchy comes from size + space, not
+   color. Surfaces are white with hairline borders and soft layered shadows. */
 @theme {
-  --color-ink: #f4f2f7;
-  --color-ink-soft: #a4a3ad;
-  --color-ink-dim: rgba(244, 242, 247, 0.55);
-  --color-accent: #6366f1;
-  --color-accent-deep: #4f46e5;
-  --color-accent-soft: #a5b4fc;
+  --color-ink: #18181b;        /* zinc-900 — headings, strong text */
+  --color-ink-soft: #52525b;   /* zinc-600 — body */
+  --color-ink-dim: #a1a1aa;    /* zinc-400 — captions, meta */
+  --color-accent: #6366f1;     /* indigo-500 — surfaces, dots, glows */
+  --color-accent-deep: #4f46e5;/* indigo-600 — button gradient floor */
+  --color-accent-soft: #4f46e5;/* readable indigo for TEXT on white (eyebrows, links, code) */
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
 :root {
-  --hairline: rgba(255, 255, 255, 0.1);
-  --hairline-strong: rgba(255, 255, 255, 0.3);
+  --hairline: rgba(0, 0, 0, 0.08);
+  --hairline-strong: rgba(0, 0, 0, 0.14);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html {
-  background-color: #000;
+  background-color: #ffffff;
   color: var(--color-ink);
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -34,11 +38,12 @@ body {
   letter-spacing: -0.011em;
   font-size: 16px;
   line-height: 1.6;
+  background-color: #ffffff;
 }
 
 ::selection {
-  background: rgba(99, 102, 241, 0.45);
-  color: #fff;
+  background: rgba(99, 102, 241, 0.22);
+  color: #18181b;
 }
 
 h1, h2, h3 {
@@ -46,99 +51,115 @@ h1, h2, h3 {
   text-wrap: balance;
 }
 
-/* ── Section glow backdrops ─────────────────────────────────────────────── */
+/* ── Section atmospheres (light, faint) ─────────────────────────────────────
+   The "canvas" behind the floating hero card, and whisper-soft indigo washes
+   for interior sections. Kept very low alpha so the page stays paper-clean. */
+.hero-canvas {
+  background:
+    radial-gradient(72% 56% at 50% 0%, rgba(99, 102, 241, 0.08), transparent 60%),
+    radial-gradient(40% 40% at 88% 8%, rgba(129, 140, 248, 0.06), transparent 70%),
+    #f6f6f9;
+}
 .glow-hero {
   background:
-    radial-gradient(62% 46% at 50% -4%, rgba(99, 102, 241, 0.26), transparent 70%),
-    radial-gradient(34% 28% at 12% 32%, rgba(79, 70, 229, 0.12), transparent 70%),
-    radial-gradient(30% 26% at 88% 18%, rgba(129, 140, 248, 0.1), transparent 70%);
+    radial-gradient(60% 48% at 50% -6%, rgba(99, 102, 241, 0.12), transparent 70%),
+    radial-gradient(38% 34% at 85% 12%, rgba(129, 140, 248, 0.07), transparent 72%);
 }
 .glow-soft {
-  background: radial-gradient(50% 50% at 50% 50%, rgba(99, 102, 241, 0.13), transparent 70%);
+  background: radial-gradient(54% 50% at 50% 26%, rgba(99, 102, 241, 0.06), transparent 70%);
+}
+
+/* ── The framed hero card (heynox structure → light treatment) ──────────────
+   A large rounded canvas that floats inside a thin gutter: pure white with a
+   gentle indigo glow off the top edge, a crisp hairline, and a soft, wide
+   shadow so it lifts off the .hero-canvas backdrop. */
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    radial-gradient(108% 68% at 50% -6%, rgba(99, 102, 241, 0.10), transparent 62%),
+    #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 4px rgba(24, 24, 27, 0.04),
+    0 44px 96px -52px rgba(49, 46, 129, 0.32);
+}
+@media (max-width: 640px) {
+  .hero-card { border-radius: 20px; }
 }
 
 /* ── Buttons ────────────────────────────────────────────────────────────── */
-/* Primary: solid white pill with lift + glow */
+/* Primary: solid indigo pill — mirrors the extension popup's Start button, so
+   the site and the product share one signature control. */
 .btn-solid {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
-  background: #fff;
-  color: #0b0b14;
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-deep));
+  color: #fff;
   font-size: 15px;
   font-weight: 550;
   letter-spacing: -0.01em;
-  padding: 13px 26px;
+  padding: 13px 24px;
   border-radius: 999px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    0 12px 28px -12px rgba(79, 70, 229, 0.6);
+  transition: transform 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth),
+    filter 0.2s var(--ease-smooth);
 }
 .btn-solid:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 44px rgba(99, 102, 241, 0.35), 0 4px 18px rgba(0, 0, 0, 0.4);
+  filter: brightness(1.04);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    0 18px 40px -14px rgba(79, 70, 229, 0.66);
 }
 .btn-solid:active { transform: translateY(0); }
 
-/* Secondary: hairline pill with shine sweep on hover */
+/* Secondary: clean hairline pill on white */
 .btn-line {
-  position: relative;
-  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: transparent;
+  background: #fff;
   color: var(--color-ink);
-  border: 0.5px solid var(--hairline-strong);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   font-size: 14px;
-  font-weight: 450;
+  font-weight: 500;
   letter-spacing: -0.005em;
-  padding: 12px 24px;
+  padding: 12px 22px;
   border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  transition: border-color 0.3s var(--ease-smooth), background-color 0.3s var(--ease-smooth),
-    transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.25s var(--ease-smooth), background-color 0.25s var(--ease-smooth),
+    transform 0.25s var(--ease-smooth), box-shadow 0.25s var(--ease-smooth);
 }
 .btn-line:hover {
-  border-color: rgba(255, 255, 255, 0.55);
-  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(0, 0, 0, 0.22);
+  background: #fafafa;
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px -10px rgba(24, 24, 27, 0.22);
 }
-.btn-line::before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: -100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
-  transform: skewX(-15deg);
-  pointer-events: none;
-  opacity: 0;
-}
-.btn-line:hover::before {
-  animation: shine 1.4s var(--ease-smooth) forwards;
-}
-@keyframes shine {
-  0% { left: -100%; opacity: 0; }
-  10% { opacity: 0.9; }
-  50% { opacity: 0.6; }
-  100% { left: 200%; opacity: 0; }
-}
+.btn-line:active { transform: translateY(0); }
 
 /* ── Cards & chips ──────────────────────────────────────────────────────── */
 .card {
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.035);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px var(--hairline);
-  transition: background-color 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth),
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 14px 36px -20px rgba(24, 24, 27, 0.16);
+  transition: border-color 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth),
     transform 0.3s var(--ease-smooth);
 }
 .card:hover {
-  background: rgba(255, 255, 255, 0.055);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 0 0 1px rgba(255, 255, 255, 0.16),
-    0 20px 60px -28px rgba(99, 102, 241, 0.35);
+  border-color: rgba(99, 102, 241, 0.28);
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.05), 0 26px 52px -26px rgba(79, 70, 229, 0.24);
   transform: translateY(-2px);
 }
 
@@ -146,33 +167,39 @@ h1, h2, h3 {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 0.5px solid var(--hairline-strong);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 999px;
   padding: 5px 13px;
   font-size: 12px;
-  font-weight: 480;
-  letter-spacing: 0.02em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   color: var(--color-ink-soft);
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 kbd.key {
   font-family: var(--font-mono);
   font-size: 0.82em;
-  background: rgba(255, 255, 255, 0.09);
-  border: 0.5px solid rgba(255, 255, 255, 0.18);
-  border-bottom-width: 1.5px;
+  background: #f4f4f5;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-bottom-width: 2px;
   border-radius: 6px;
   padding: 2px 7px;
-  color: var(--color-ink);
+  color: #3f3f46;
   white-space: nowrap;
 }
 
-/* ── Terminal / output blocks ───────────────────────────────────────────── */
+/* ── Windows / code surfaces (light) ────────────────────────────────────────
+   Used for the live-demo browser window AND the clipboard output panel. Light,
+   never black — the dark element belongs only to the Pluck overlay that sits
+   *inside* the demo window (see .pg-* below). */
 .terminal {
   border-radius: 14px;
-  background: rgba(10, 10, 16, 0.92);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px var(--hairline),
-    0 24px 70px -30px rgba(0, 0, 0, 0.9);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 30px 64px -38px rgba(24, 24, 27, 0.3);
   overflow: hidden;
 }
 .terminal-bar {
@@ -180,13 +207,14 @@ kbd.key {
   align-items: center;
   gap: 6px;
   padding: 11px 15px;
-  border-bottom: 1px solid var(--hairline);
+  background: #f7f7f8;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
 }
 .terminal-bar i {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.14);
 }
 
 /* ── Header pill (morphs on scroll) ─────────────────────────────────────── */
@@ -210,16 +238,16 @@ kbd.key {
   max-width: 1120px;
   padding: 9px 10px 9px 16px;
   border-radius: 999px;
-  border: 0.5px solid transparent;
+  border: 1px solid transparent;
   transition: max-width 0.55s var(--ease-settle), background-color 0.4s var(--ease-smooth),
     border-color 0.4s var(--ease-smooth), box-shadow 0.4s var(--ease-smooth),
     backdrop-filter 0.4s var(--ease-smooth);
 }
 .nav-pill.is-scrolled {
   max-width: 760px;
-  background: rgba(14, 14, 22, 0.72);
-  border-color: var(--hairline);
-  box-shadow: 0 14px 44px -18px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 14px 40px -18px rgba(24, 24, 27, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   backdrop-filter: blur(20px) saturate(150%);
 }
@@ -233,10 +261,12 @@ kbd.key {
 }
 .nav-link:hover {
   color: var(--color-ink);
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.05);
 }
 
-/* ── Pluck overlay re-creation (playground) — mirrors src/content/styles.js ─ */
+/* ── Pluck overlay re-creation (playground) — mirrors src/content/styles.js ──
+   INTENTIONALLY DARK. This is what the real extension overlay looks like on
+   any page; it must stay dark glass even though the website is light. */
 .pg-box {
   position: absolute;
   pointer-events: none;
@@ -347,6 +377,25 @@ kbd.key {
 }
 .pg-page * { cursor: crosshair; }
 
+/* ── Entrance reveals ───────────────────────────────────────────────────────
+   One orchestrated page-load stagger (hero, via --reveal-delay) plus
+   JS-free scroll reveals for below-the-fold cards. */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  animation: revealUp 0.6s var(--ease-settle) both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+@supports (animation-timeline: view()) {
+  .reveal-scroll {
+    animation: revealUp 0.7s var(--ease-settle) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 28%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -377,13 +426,14 @@ details.faq summary {
   font-size: 16.5px;
   font-weight: 500;
   letter-spacing: -0.01em;
+  color: var(--color-ink);
 }
 details.faq summary::-webkit-details-marker { display: none; }
 details.faq summary::after {
   content: "+";
   font-size: 20px;
   font-weight: 300;
-  color: var(--color-ink-soft);
+  color: var(--color-ink-dim);
   transition: transform 0.25s var(--ease-smooth);
   flex: 0 0 auto;
 }

@@ -158,7 +158,7 @@ export default function SupportPage() {
 
           {/* troubleshooting */}
           <h2 className="mb-2 text-[22px] font-semibold">Troubleshooting</h2>
-          <div className="border-t border-white/10">
+          <div className="border-t border-black/[0.08]">
             {TROUBLESHOOTING.map(({ q, a }) => (
               <details key={q} className="faq">
                 <summary>{q}</summary>
@@ -197,7 +197,7 @@ export default function SupportPage() {
             </p>
           </div>
 
-          <div className="mt-14 flex flex-wrap gap-3 border-t border-white/10 pt-8">
+          <div className="mt-14 flex flex-wrap gap-3 border-t border-black/[0.08] pt-8">
             <Link href="/" className="btn-line">
               ← Back to Pluck
             </Link>

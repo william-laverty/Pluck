@@ -112,7 +112,7 @@ export function LiveDemo() {
           <i style={{ background: "#fda4af" }} />
           <i style={{ background: "#fcd34d" }} />
           <i style={{ background: "#86efac" }} />
-          <span className="mx-auto rounded-md bg-white/5 px-6 py-0.5 font-mono text-[11px] text-ink-soft">
+          <span className="mx-auto rounded-md bg-black/[0.05] px-6 py-0.5 font-mono text-[11px] text-ink-soft">
             solstice.app
           </span>
           <span className="w-12" />
