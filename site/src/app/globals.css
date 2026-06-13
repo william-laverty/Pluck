@@ -226,7 +226,7 @@ kbd.key {
   z-index: 1000;
   display: flex;
   justify-content: center;
-  padding: 14px 16px 0;
+  padding: 30px 24px 0;
   pointer-events: none;
 }
 .nav-pill {
@@ -235,8 +235,8 @@ kbd.key {
   align-items: center;
   gap: 6px;
   width: 100%;
-  max-width: 1120px;
-  padding: 9px 10px 9px 16px;
+  max-width: 1152px;
+  padding: 9px 10px 9px 18px;
   border-radius: 999px;
   border: 1px solid transparent;
   transition: max-width 0.55s var(--ease-settle), background-color 0.4s var(--ease-smooth),
