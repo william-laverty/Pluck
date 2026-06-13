@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { DESCRIPTION, SITE_NAME, SITE_URL, TITLE, webSiteSchema } from "@/lib/seo";
 import "./globals.css";
 
@@ -76,6 +77,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema()) }}
         />
         {children}
+        {/* Cookieless, privacy-friendly traffic analytics (marketing site only;
+            the extension itself remains zero-network — see /privacy). */}
+        <Analytics />
       </body>
     </html>
   );
