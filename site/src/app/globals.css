@@ -377,6 +377,206 @@ kbd.key {
 }
 .pg-page * { cursor: crosshair; }
 
+/* ── "How it works" step mockups (StepScene.tsx) ────────────────────────────
+   Three static scenes: an abstract mini-window (the page being plucked) with
+   the real Pluck overlay — the dark .pg-* glass — composited on top, so each
+   card shows the product, not an illustration. */
+.step-scene {
+  position: relative;
+  height: 196px;
+  overflow: hidden;
+  padding: 22px 20px 0;
+  background:
+    radial-gradient(120% 92% at 50% -12%, rgba(99, 102, 241, 0.13), transparent 62%),
+    #f6f6fb;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* the mini browser window — bleeds off the bottom into the card text */
+.step-win {
+  position: relative;
+  height: 100%;
+  border-radius: 11px 11px 0 0;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-bottom: 0;
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 26px 50px -30px rgba(49, 46, 129, 0.36);
+  overflow: hidden;
+}
+.step-win-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  background: #f7f7f8;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.step-win-bar i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.13);
+}
+.step-win-url {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-ink-dim);
+}
+.step-win-body {
+  position: relative;
+  padding: 16px 16px 0;
+}
+
+/* abstract skeleton content */
+.step-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.step-bar {
+  height: 9px;
+  border-radius: 999px;
+  background: #e6e6ee;
+}
+.step-bar--soft {
+  background: #eeeef4;
+}
+
+/* faux controls (scene 1) */
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.step-target {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-deep));
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.14);
+}
+.step-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  background: #fff;
+  border: 1px solid #d4d4dc;
+}
+.step-cursor {
+  position: absolute;
+  right: -7px;
+  bottom: -9px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* the dark mono tag pill, re-anchored above its target (overrides .pg-label) */
+.step-label {
+  top: -33px;
+  left: 0;
+  max-width: none;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+.step-label.step-label--tl {
+  top: 9px;
+  left: 10px;
+}
+
+/* dark refine toolbar (scene 2) */
+.step-toolbar {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(20, 20, 30, 0.92);
+  color: #e4e4ef;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  backdrop-filter: blur(8px) saturate(140%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.34);
+}
+.step-toolbar .step-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 2px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+.step-toolbar .step-esc {
+  color: #fca5a5;
+}
+.step-toolbar .step-dot {
+  color: #6b7280;
+}
+
+/* highlighted container target (scene 2) */
+.step-card-target {
+  position: relative;
+  margin-top: 36px;
+  border-radius: 10px;
+  padding: 14px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  background: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.1);
+}
+
+/* format switcher (scene 3) — mirrors the real popup tablist (FormatTabs) */
+.step-seg {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 999px;
+  background: #f1f1f6;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.step-seg-item {
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+}
+.step-seg-item.is-active {
+  background: #fff;
+  color: var(--color-accent-soft);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+.step-skel--paste {
+  margin-top: 16px;
+}
+
+/* copied toast, pinned to the scene bottom (scene 3) — reuses .pg-toast glass */
+.step-toast {
+  bottom: 16px;
+}
+
 /* ── Entrance reveals ───────────────────────────────────────────────────────
    One orchestrated page-load stagger (hero, via --reveal-delay) plus
    JS-free scroll reveals for below-the-fold cards. */

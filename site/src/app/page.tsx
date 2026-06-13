@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { LiveDemo } from "@/components/LiveDemo";
-import { FormatTabs } from "@/components/FormatTabs";
+import { StepScene } from "@/components/StepScene";
 import { PluckMark } from "@/components/Logo";
 import { FAQ, GITHUB_URL, faqSchema, softwareApplicationSchema } from "@/lib/seo";
 
@@ -46,61 +46,34 @@ function SectionHeading({
   );
 }
 
-/** A labelled beat inside the consolidated "How it works" section — a numbered
- *  mono eyebrow + an h3 title, so the section reads as one story in three parts. */
-function Beat({
-  n,
-  kicker,
-  title,
-  sub,
-}: {
-  n: string;
-  kicker: string;
-  title: string;
-  sub?: string;
-}) {
-  return (
-    <div className="mx-auto mb-10 max-w-2xl border-t border-black/[0.07] pt-14 text-center">
-      <p className="mb-3 font-mono text-[12px] tracking-[0.14em] uppercase">
-        <span className="text-accent-soft">{n}</span>
-        <span className="text-ink-dim"> · {kicker}</span>
-      </p>
-      <h3 className="text-[clamp(22px,2.8vw,32px)] leading-[1.15] font-semibold">{title}</h3>
-      {sub && <p className="mt-3 text-[15.5px] text-ink-soft">{sub}</p>}
-    </div>
-  );
-}
-
 const STEPS = [
   {
-    n: "1",
-    title: "Hit the hotkey",
+    scene: "point" as const,
+    title: "Point at it",
     body: (
       <>
-        <kbd className="key">⌘⇧E</kbd> on Mac, <kbd className="key">Ctrl⇧E</kbd> elsewhere — or
-        record any combo you like. It fires on the first press, on any site.
+        Hit <kbd className="key">⌘⇧E</kbd> and hover. The element under your cursor lights up with
+        its tag, classes and size — first press, any site.
       </>
     ),
   },
   {
-    n: "2",
-    title: "Click the element",
+    scene: "click" as const,
+    title: "Click to grab",
     body: (
       <>
-        The element under your cursor lights up with its{" "}
-        <code className="font-mono text-[13px] text-accent-soft">tag.class#id</code> and size.{" "}
-        <kbd className="key">↑</kbd> grabs the parent, <kbd className="key">↓</kbd> the child. The
-        click never reaches the page.
+        One click captures it; the page never sees it. Nudge <kbd className="key">↑</kbd>/
+        <kbd className="key">↓</kbd> to the parent or child for the right container.
       </>
     ),
   },
   {
-    n: "3",
+    scene: "paste" as const,
     title: "Paste to your agent",
     body: (
       <>
-        A verified-unique selector — plus the element&apos;s text and markup — is on your clipboard.
-        Your agent knows exactly what you mean.
+        A verified-unique selector lands on your clipboard — with the element&apos;s text and markup,
+        in whichever format you pick.
       </>
     ),
   },
@@ -111,60 +84,30 @@ const ENGINE = [
     title: "Verified-unique, always",
     body: (
       <>
-        A selector ships only if <code className="font-mono text-[13px]">querySelectorAll</code>{" "}
-        matches exactly one node. Ancestors and{" "}
-        <code className="font-mono text-[13px]">:nth-of-type()</code> are added only when they
-        actually disambiguate. If uniqueness can&apos;t be reached, Pluck tells you.
+        A selector ships only when <code className="font-mono text-[13px]">querySelectorAll</code>{" "}
+        matches exactly one node — ancestors and{" "}
+        <code className="font-mono text-[13px]">:nth-of-type()</code> added only when they actually
+        disambiguate.
       </>
     ),
-    code: (
-      <span className="text-[#4f46e5]">document.querySelectorAll(sel).length === 1 ✓</span>
-    ),
+    code: <span className="text-[#4f46e5]">document.querySelectorAll(sel).length === 1 ✓</span>,
   },
   {
     title: "Junk classes filtered out",
     body: (
       <>
-        Machine-generated noise from CSS Modules, styled-components, Emotion and friends is dropped,
-        so selectors stay readable and stable across builds. Real names survive.
+        Machine-generated noise from CSS Modules, styled-components and Emotion is dropped, so
+        selectors stay readable and stable across builds. Real names survive.
       </>
     ),
     code: (
       <>
         <span className="text-[#dc2626] line-through">.css-1a2b3c</span>{" "}
-        <span className="text-[#dc2626] line-through">.sc-bdVaJa</span>{" "}
-        <span className="text-[#dc2626] line-through">.jsx-81747</span>
+        <span className="text-[#dc2626] line-through">.sc-bdVaJa</span>
         {"\n"}
-        <span className="text-[#15803d]">.btn-primary .editorContent ✓</span>
+        <span className="text-[#15803d]">.btn-primary  ✓</span>
       </>
     ),
-  },
-  {
-    title: "Refine without re-aiming",
-    body: (
-      <>
-        Wanted the card, not the paragraph inside it? <kbd className="key">↑</kbd> walks up to the
-        parent, <kbd className="key">↓</kbd> back down — grab the right container without
-        pixel-perfect mousing.
-      </>
-    ),
-    code: (
-      <span className="text-zinc-600">
-        p.card-sub <span className="text-accent-soft">→ ↑ →</span> div.card{" "}
-        <span className="text-accent-soft">→ ↑ →</span> section.features
-      </span>
-    ),
-  },
-  {
-    title: "Correct in the weird cases",
-    body: (
-      <>
-        SVG tag casing is preserved (a lowercased{" "}
-        <code className="font-mono text-[13px]">linearGradient</code> matches nothing), and every
-        identifier is CSS-escaped — emoji classes, leading digits, all of it.
-      </>
-    ),
-    code: <span className="text-[#4f46e5]">svg &gt; defs &gt; linearGradient#grad-a ✓</span>,
   },
 ];
 
@@ -235,48 +178,38 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── How it works (consolidated: gesture → clipboard → engine) ───── */}
+        {/* ── How it works (point · click · paste) ─────────────────────────── */}
         <section id="how" className="scroll-mt-24 px-5 pt-24 pb-20">
           <div className="mx-auto max-w-5xl">
             <SectionHeading
               kicker="How it works"
               title="One gesture, not five steps"
-              sub="The old loop: DevTools → Inspect → read the class soup → copy → describe it anyway. Pluck collapses it into point, click, paste — and earns every selector it hands your agent."
+              sub="No DevTools, no class-soup. Point, click, and paste — in under three seconds."
             />
 
-            {/* Beat 1 — the gesture */}
-            <Beat n="01" kicker="The gesture" title="Point and click, nothing else" />
             <div className="grid gap-5 sm:grid-cols-3">
               {STEPS.map((s) => (
-                <div key={s.n} className="card reveal-scroll p-7">
-                  <span className="mb-5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-accent/12 font-mono text-[14px] font-semibold text-accent-soft">
-                    {s.n}
-                  </span>
-                  <h4 className="mb-2.5 text-[17px] font-semibold">{s.title}</h4>
-                  <p className="text-[14.5px] leading-relaxed text-ink-soft">{s.body}</p>
+                <div key={s.title} className="card reveal-scroll flex flex-col overflow-hidden">
+                  <StepScene step={s.scene} />
+                  <div className="p-7">
+                    <h3 className="mb-2 text-[18px] font-semibold">{s.title}</h3>
+                    <p className="text-[14.5px] leading-relaxed text-ink-soft">{s.body}</p>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Beat 2 — what gets copied */}
-            <div className="mt-8">
-              <Beat
-                n="02"
-                kicker="What lands on your clipboard"
-                title="Choose how much context travels"
-                sub="Three formats, switchable in the popup. The default gives an agent everything it needs to find the element in source — and nothing it doesn't."
-              />
-              <FormatTabs />
-            </div>
-
-            {/* Beat 3 — the engine */}
-            <div className="mt-8">
-              <Beat
-                n="03"
-                kicker="Selectors that earn the paste"
-                title="Verified, not guessed"
-                sub="Most pickers guess. Pluck checks every candidate against the live DOM before it's offered."
-              />
+            {/* slim engine strip — the selector quality that earns the paste */}
+            <div className="mx-auto mt-16 max-w-3xl border-t border-black/[0.07] pt-14">
+              <div className="mb-8 text-center">
+                <h3 className="text-[clamp(20px,2.6vw,28px)] leading-[1.2] font-semibold">
+                  Selectors that earn the paste
+                </h3>
+                <p className="mx-auto mt-3 max-w-xl text-[15.5px] text-ink-soft">
+                  Most pickers guess. Pluck checks every candidate against the live DOM before it
+                  hands it to your agent.
+                </p>
+              </div>
               <div className="grid gap-5 sm:grid-cols-2">
                 {ENGINE.map((e) => (
                   <div key={e.title} className="card reveal-scroll p-7">
