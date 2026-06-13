@@ -246,11 +246,6 @@ export function LiveDemo() {
           <span className="pg-sel">{toast}</span>
         </div>
       </div>
-
-      <p className="mt-4 text-center text-[13px] text-ink-soft">
-        It really copies — paste your clipboard after clicking. Selectors are computed live with the
-        same verified-uniqueness engine the extension ships.
-      </p>
     </div>
   );
 }

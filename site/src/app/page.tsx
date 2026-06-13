@@ -181,13 +181,6 @@ export default function Home() {
               <div className="mx-auto grid w-full max-w-6xl items-center gap-y-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
                 {/* LEFT — copy + CTA */}
                 <div className="text-left">
-                  <p
-                    className="chip reveal mb-7"
-                    style={{ "--reveal-delay": "0s" } as React.CSSProperties}
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                    Free &amp; open source · Chrome · Edge · Brave · Arc
-                  </p>
                   <h1
                     className="reveal text-[clamp(32px,3.6vw,52px)] leading-[1.05] font-semibold"
                     style={{ "--reveal-delay": "0.06s" } as React.CSSProperties}
@@ -421,25 +414,6 @@ export default function Home() {
       {/* ── Footer ─────────────────────────────────────────────────────── */}
       <footer className="border-t border-black/[0.08] px-5 py-12">
         <div className="mx-auto max-w-5xl">
-          <a
-            href={`${GITHUB_URL}/stargazers`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group mx-auto mb-9 flex w-fit items-center gap-2.5 rounded-full border border-black/10 bg-white px-5 py-2.5 text-[14px] text-ink-soft shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all duration-300 hover:border-accent/40 hover:bg-[rgba(99,102,241,0.05)] hover:text-ink"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              fill="currentColor"
-              aria-hidden
-              className="text-accent-soft transition-transform duration-300 group-hover:scale-110"
-            >
-              <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-            </svg>
-            If Pluck saved you a DevTools trip,&nbsp;
-            <span className="font-semibold text-ink">star it on GitHub</span>
-          </a>
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
             <div className="flex items-center gap-2.5">
               <PluckMark size={22} radius={6} />
