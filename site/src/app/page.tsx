@@ -3,7 +3,14 @@ import { Header } from "@/components/Header";
 import { LiveDemo } from "@/components/LiveDemo";
 import { StepScene } from "@/components/StepScene";
 import { PluckMark } from "@/components/Logo";
-import { FAQ, GITHUB_URL, faqSchema, softwareApplicationSchema } from "@/lib/seo";
+import {
+  AUTHOR,
+  CONTACT_EMAIL,
+  FAQ,
+  GITHUB_URL,
+  faqSchema,
+  softwareApplicationSchema,
+} from "@/lib/seo";
 
 const GitHubGlyph = () => (
   <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden>
@@ -117,10 +124,11 @@ export default function Home() {
       <Schema />
       <Header />
       <main id="top">
-        {/* ── Hero: full-bleed rounded card (heynox layout) — copy left, live demo right ── */}
-        <section className="hero-canvas p-3 sm:p-4">
-          <div className="hero-card relative flex min-h-[calc(100svh-24px)] flex-col overflow-hidden sm:min-h-[calc(100svh-32px)]">
-            <div className="flex flex-1 items-center px-6 pt-28 pb-12 sm:px-10 lg:px-16">
+        {/* ── Hero: rounded card on the plain page (ato-mcp chrome) — copy left, live demo right ── */}
+        <section className="p-3">
+          <div className="hero-card relative flex min-h-[calc(100svh-24px)] flex-col overflow-hidden">
+            <span className="hero-glow" aria-hidden />
+            <div className="relative z-10 flex flex-1 items-center px-6 pt-28 pb-12 sm:px-10 lg:px-16">
               <div className="mx-auto grid w-full max-w-6xl items-center gap-y-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
                 {/* LEFT — copy + CTA */}
                 <div className="text-left">
@@ -344,37 +352,115 @@ export default function Home() {
         </section>
       </main>
 
-      {/* ── Footer ─────────────────────────────────────────────────────── */}
-      <footer className="border-t border-black/[0.08] px-5 py-12">
-        <div className="mx-auto max-w-5xl">
-          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div className="flex items-center gap-2.5">
-              <PluckMark size={22} radius={6} />
-              <span className="text-[14px] font-semibold">Pluck</span>
-              <span className="text-[13px] text-ink-dim">© 2026 William Laverty · MIT</span>
-            </div>
-            <nav
-              className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-ink-soft"
-              aria-label="Footer"
-            >
-              <a className="transition-colors hover:text-ink" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-                GitHub
-              </a>
-              <a
-                className="transition-colors hover:text-ink"
-                href={`${GITHUB_URL}/blob/main/CHANGELOG.md`}
-                target="_blank"
-                rel="noopener noreferrer"
+      {/* ── Footer: inset rounded card (superpower section_footer3 layout) ──
+          Brand group on the left, link grid on the right, hairline bottom bar —
+          floating in the same gutter and radius as the hero card. */}
+      <footer className="px-3 pb-3">
+        <div className="footer-card overflow-hidden px-6 py-14 sm:px-10 sm:py-16 lg:px-16">
+          <div className="mx-auto max-w-6xl">
+            <div className="flex flex-col gap-12 lg:flex-row lg:justify-between lg:gap-16">
+              {/* Brand group */}
+              <div className="max-w-sm">
+                <div className="flex items-center gap-2.5">
+                  <PluckMark size={26} radius={7} />
+                  <span className="text-[17px] font-semibold tracking-[-0.02em]">Pluck</span>
+                </div>
+                <p className="mt-5 text-[14.5px] leading-relaxed text-ink-soft">
+                  <span className="font-medium text-ink">Point, click, paste.</span> An agent-ready
+                  CSS selector lands on your clipboard — for whichever AI agent you use. Free, open
+                  source, offline by design.
+                </p>
+                <div className="mt-6">
+                  <p className="footer-col-head mb-3">Works with your agent</p>
+                  <div className="flex flex-wrap gap-2">
+                    {["Claude Code", "Codex", "Cursor"].map((a) => (
+                      <span key={a} className="chip">
+                        {a}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Link grid */}
+              <nav
+                className="grid grid-cols-2 gap-x-10 gap-y-10 sm:grid-cols-3 lg:gap-x-16"
+                aria-label="Footer"
               >
-                Changelog
-              </a>
-              <Link className="transition-colors hover:text-ink" href="/support">
-                Support
-              </Link>
-              <Link className="transition-colors hover:text-ink" href="/privacy">
-                Privacy
-              </Link>
-            </nav>
+                <div className="flex flex-col gap-3.5">
+                  <p className="footer-col-head">Product</p>
+                  <a className="footer-link" href="#how">
+                    How it works
+                  </a>
+                  <a className="footer-link" href="#privacy">
+                    Privacy
+                  </a>
+                  <a className="footer-link" href="#faq">
+                    FAQ
+                  </a>
+                </div>
+                <div className="flex flex-col gap-3.5">
+                  <p className="footer-col-head">Open source</p>
+                  <a
+                    className="footer-link"
+                    href={GITHUB_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub
+                  </a>
+                  <a
+                    className="footer-link"
+                    href={`${GITHUB_URL}/blob/main/CHANGELOG.md`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Changelog
+                  </a>
+                  <a
+                    className="footer-link"
+                    href={`${GITHUB_URL}#install`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Install guide
+                  </a>
+                </div>
+                <div className="flex flex-col gap-3.5">
+                  <p className="footer-col-head">Support</p>
+                  <Link className="footer-link" href="/support">
+                    Support
+                  </Link>
+                  <Link className="footer-link" href="/privacy">
+                    Privacy policy
+                  </Link>
+                  <a className="footer-link" href={`mailto:${CONTACT_EMAIL}`}>
+                    Contact
+                  </a>
+                </div>
+              </nav>
+            </div>
+
+            {/* Bottom bar */}
+            <div className="mt-14 flex flex-col gap-4 border-t border-black/[0.08] pt-7 text-[13px] text-ink-dim sm:flex-row sm:items-center sm:justify-between">
+              <p>© 2026 {AUTHOR} · MIT License</p>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5">
+                <Link className="footer-link" href="/privacy">
+                  Privacy
+                </Link>
+                <Link className="footer-link" href="/support">
+                  Support
+                </Link>
+                <a
+                  className="footer-link"
+                  href={GITHUB_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

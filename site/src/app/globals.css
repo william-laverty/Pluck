@@ -21,6 +21,9 @@
   --hairline-strong: rgba(0, 0, 0, 0.14);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Shared inset-card rounding — the hero card and footer card use one radius
+     (ato-mcp's 24px) so the page opens and closes on the same shape. */
+  --card-radius: 24px;
 }
 
 html {
@@ -54,12 +57,6 @@ h1, h2, h3 {
 /* ── Section atmospheres (light, faint) ─────────────────────────────────────
    The "canvas" behind the floating hero card, and whisper-soft indigo washes
    for interior sections. Kept very low alpha so the page stays paper-clean. */
-.hero-canvas {
-  background:
-    radial-gradient(72% 56% at 50% 0%, rgba(99, 102, 241, 0.08), transparent 60%),
-    radial-gradient(40% 40% at 88% 8%, rgba(129, 140, 248, 0.06), transparent 70%),
-    #f6f6f9;
-}
 .glow-hero {
   background:
     radial-gradient(60% 48% at 50% -6%, rgba(99, 102, 241, 0.12), transparent 70%),
@@ -69,25 +66,26 @@ h1, h2, h3 {
   background: radial-gradient(54% 50% at 50% 26%, rgba(99, 102, 241, 0.06), transparent 70%);
 }
 
-/* ── The framed hero card (heynox structure → light treatment) ──────────────
-   A large rounded canvas that floats inside a thin gutter: pure white with a
-   gentle indigo glow off the top edge, a crisp hairline, and a soft, wide
-   shadow so it lifts off the .hero-canvas backdrop. */
+/* ── The framed hero card (ato-mcp "Clinical" chrome → Pluck palette) ────────
+   A large rounded card floating inside a thin gutter on the plain white page:
+   a flat, faintly-cool paper fill, a hairline border, and a soft layered shadow
+   (a tight ambient pair + a wide indigo-tinted diffuse). The single accent lives
+   in .hero-glow — a small indigo bleed from the upper-left, used sparingly. */
 .hero-card {
   position: relative;
   overflow: hidden;
-  border-radius: 28px;
-  background:
-    radial-gradient(108% 68% at 50% -6%, rgba(99, 102, 241, 0.10), transparent 62%),
-    #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--card-radius);
+  background: #fbfbfe;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(24, 24, 27, 0.04),
-    0 44px 96px -52px rgba(49, 46, 129, 0.32);
+    0 1px 2px rgba(24, 24, 27, 0.04),
+    0 24px 60px -28px rgba(49, 46, 129, 0.16);
 }
-@media (max-width: 640px) {
-  .hero-card { border-radius: 20px; }
+.hero-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 55% at 12% 22%, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
 }
 
 /* ── Buttons ────────────────────────────────────────────────────────────── */
@@ -162,6 +160,33 @@ h1, h2, h3 {
   box-shadow: 0 1px 2px rgba(24, 24, 27, 0.05), 0 26px 52px -26px rgba(79, 70, 229, 0.24);
   transform: translateY(-2px);
 }
+
+/* ── Footer card (ato-mcp section_footer3 inset block → Pluck palette) ───────
+   The page closes on the same rounded card as the hero, sitting directly on the
+   white page: a faintly-cool inset block, a hairline border, a soft indigo-tinted
+   diffuse shadow. Brand group left, link columns right, a hairline bottom bar. */
+.footer-card {
+  position: relative;
+  border-radius: var(--card-radius);
+  background: #fafafe;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 1px 2px rgba(24, 24, 27, 0.04),
+    0 20px 50px -28px rgba(49, 46, 129, 0.12);
+}
+.footer-col-head {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-dim);
+}
+.footer-link {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  transition: color 0.2s var(--ease-smooth);
+}
+.footer-link:hover { color: var(--color-ink); }
 
 .chip {
   display: inline-flex;
