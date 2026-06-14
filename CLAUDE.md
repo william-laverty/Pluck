@@ -25,7 +25,14 @@ Run `npm run check && npm test` before considering any change done. The e2e suit
 
 ### Marketing site (`site/`)
 
-Separate toolchain: Next.js 16 (App Router) + Tailwind v4, deployed to Vercel as project **getpluck** (https://getpluck.vercel.app, personal scope). `cd site && npm run build` to verify; `vercel deploy --prod --yes` from `site/` to ship. `site/src/lib/pluckEngine.ts` is a TS port of the selector engine core for the landing page's live playground — if you change the engine's observable behavior in `src/content/selector.js`, mirror it there. `site/src/lib/seo.ts` is the single source for URLs/copy/JSON-LD; the FAQ array feeds both the rendered accordion and the FAQPage schema. The site is excluded from the extension's `check.js` walk.
+Separate toolchain: Next.js 16 (App Router) + Tailwind v4, deployed to Vercel as project **getpluck** (https://getpluck.vercel.app, personal scope). `cd site && npm run build` verifies (runs `tsc` — the build is the *only* gate; there are no site lint/unit tests); `vercel deploy --prod --yes` from `site/` ships. Note: `site/AGENTS.md` warns this Next.js diverges from training data — check `node_modules/next/dist/docs/` before writing site code.
+
+`src/app/page.tsx` is the entire landing page (section-helper components + content arrays inline); `src/components/` holds the visual pieces (`Header`, `LiveDemo`, `StepScene`, `Logo`). **Three things in `site/` mirror the extension and must move with it:**
+- `src/lib/pluckEngine.ts` — TS port of the selector-engine core for the landing page's live playground; if you change the engine's observable behavior in `src/content/selector.js`, mirror it here.
+- `src/app/globals.css` — re-creates the extension's **dark overlay** (`.pg-box`/`.pg-label`/`.pg-toast`) for the `LiveDemo` playground and the "How it works" step mockups (`StepScene.tsx`); it mirrors `src/content/styles.js`, so restyling the real overlay means updating it here too.
+- `src/lib/seo.ts` — single source for URLs/copy/JSON-LD; the FAQ array feeds both the rendered accordion and the FAQPage schema.
+
+The site is excluded from the extension's `check.js` walk.
 
 ## Architecture
 
