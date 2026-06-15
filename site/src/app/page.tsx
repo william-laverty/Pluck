@@ -86,38 +86,6 @@ const STEPS = [
   },
 ];
 
-const ENGINE = [
-  {
-    title: "Verified-unique, always",
-    body: (
-      <>
-        A selector ships only when <code className="font-mono text-[13px]">querySelectorAll</code>{" "}
-        matches exactly one node — ancestors and{" "}
-        <code className="font-mono text-[13px]">:nth-of-type()</code> added only when they actually
-        disambiguate.
-      </>
-    ),
-    code: <span className="text-[#4f46e5]">document.querySelectorAll(sel).length === 1 ✓</span>,
-  },
-  {
-    title: "Junk classes filtered out",
-    body: (
-      <>
-        Machine-generated noise from CSS Modules, styled-components and Emotion is dropped, so
-        selectors stay readable and stable across builds. Real names survive.
-      </>
-    ),
-    code: (
-      <>
-        <span className="text-[#dc2626] line-through">.css-1a2b3c</span>{" "}
-        <span className="text-[#dc2626] line-through">.sc-bdVaJa</span>
-        {"\n"}
-        <span className="text-[#15803d]">.btn-primary  ✓</span>
-      </>
-    ),
-  },
-];
-
 export default function Home() {
   return (
     <>
@@ -206,105 +174,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-
-            {/* slim engine strip — the selector quality that earns the paste */}
-            <div className="mx-auto mt-16 max-w-3xl border-t border-black/[0.07] pt-14">
-              <div className="mb-8 text-center">
-                <h3 className="text-[clamp(20px,2.6vw,28px)] leading-[1.2] font-semibold">
-                  Selectors that earn the paste
-                </h3>
-                <p className="mx-auto mt-3 max-w-xl text-[15.5px] text-ink-soft">
-                  Most pickers guess. Pluck checks every candidate against the live DOM before it
-                  hands it to your agent.
-                </p>
-              </div>
-              <div className="grid gap-5 sm:grid-cols-2">
-                {ENGINE.map((e) => (
-                  <div key={e.title} className="card reveal-scroll p-7">
-                    <h4 className="mb-2.5 text-[17px] font-semibold">{e.title}</h4>
-                    <p className="mb-4 text-[14.5px] leading-relaxed text-ink-soft">{e.body}</p>
-                    <pre className="overflow-x-auto rounded-lg border border-black/[0.07] bg-zinc-50 p-3.5 font-mono text-[12.5px] leading-relaxed">
-                      {e.code}
-                    </pre>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Reliability ──────────────────────────────────────────────── */}
-        <section className="px-5 py-20">
-          <div className="mx-auto max-w-5xl">
-            <div
-              className="card overflow-hidden p-10 sm:p-14"
-              style={{ background: "rgba(99,102,241,0.05)", borderColor: "rgba(99,102,241,0.18)" }}
-            >
-              <div className="mx-auto max-w-2xl text-center">
-                <p className="mb-3 text-[12.5px] font-semibold tracking-[0.14em] text-accent-soft uppercase">
-                  Engineered for the first press
-                </p>
-                <h2 className="text-[clamp(24px,3vw,36px)] leading-[1.2] font-semibold">
-                  The shortcut that always fires
-                </h2>
-                <p className="mt-5 text-[15.5px] leading-relaxed text-ink-soft">
-                  Most extensions route hotkeys through the browser&apos;s command API — which means
-                  waking a service worker, racing injection, and silently failing in some browsers.
-                  Pluck&apos;s listener is <em>already on the page</em>, declared in the manifest. No
-                  wake-up, no race. And because every inspect-mode event is captured before the page
-                  sees it, you can pluck a link or submit button without triggering it.
-                </p>
-                <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
-                  {["Chrome", "Edge", "Brave", "Arc"].map((b) => (
-                    <span key={b} className="chip">
-                      {b} ✓
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Privacy ──────────────────────────────────────────────────── */}
-        <section id="privacy" className="glow-soft scroll-mt-24 px-5 py-24">
-          <div className="mx-auto max-w-5xl">
-            <SectionHeading
-              kicker="Privacy"
-              title="Nothing leaves your machine"
-              sub="Not a promise — an architecture. Pluck has no server to send anything to."
-            />
-            <div className="grid gap-5 sm:grid-cols-3">
-              {[
-                {
-                  title: "Zero network",
-                  body: "No requests, no analytics, no telemetry, no error reporting, no accounts. The permission gate in CI fails the build if anything new sneaks in.",
-                },
-                {
-                  title: "Reads only on invoke",
-                  body: "Pluck touches the DOM at the moment you activate it and click — never in the background, never on page load.",
-                },
-                {
-                  title: "Local storage only",
-                  body: "Your format preference, custom shortcut and last 10 captures live in chrome.storage.local — on your device, deleted on uninstall.",
-                },
-              ].map((c) => (
-                <div key={c.title} className="card reveal-scroll p-7">
-                  <h3 className="mb-2.5 text-[16.5px] font-semibold">{c.title}</h3>
-                  <p className="text-[14.5px] leading-relaxed text-ink-soft">{c.body}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-8 text-center text-[14px] text-ink-soft">
-              Read the full{" "}
-              <Link
-                href="/privacy"
-                className="text-accent-soft underline decoration-accent/40 underline-offset-4 hover:text-ink"
-              >
-                privacy policy
-              </Link>{" "}
-              — it&apos;s genuinely short.
-            </p>
           </div>
         </section>
 
@@ -392,9 +261,9 @@ export default function Home() {
                   <a className="footer-link" href="#how">
                     How it works
                   </a>
-                  <a className="footer-link" href="#privacy">
+                  <Link className="footer-link" href="/privacy">
                     Privacy
-                  </a>
+                  </Link>
                   <a className="footer-link" href="#faq">
                     FAQ
                   </a>

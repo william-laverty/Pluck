@@ -23,7 +23,7 @@ export function Header() {
         </a>
         <div className="hidden flex-1 items-center justify-center gap-1 sm:flex">
           <a className="nav-link" href="#how">How it works</a>
-          <a className="nav-link" href="#privacy">Privacy</a>
+          <a className="nav-link" href="/privacy">Privacy</a>
           <a className="nav-link" href="#faq">FAQ</a>
         </div>
         <div className="flex flex-1 items-center justify-end sm:flex-none">
